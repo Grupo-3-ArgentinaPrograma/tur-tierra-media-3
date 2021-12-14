@@ -67,11 +67,10 @@ public class AtraccionDAOImpl implements AtraccionDAO {
 			Connection conn = ConnectionProvider.getConnection();
 
 			PreparedStatement statement = conn.prepareStatement(sql);
-			int i = 1;
-			statement.setString(i, attraction.getNombre());
-			statement.setInt(i++, attraction.getCost());
-			statement.setDouble(i++, attraction.getDuration());
-			statement.setInt(i++, attraction.getCapacity());
+			statement.setString(1, attraction.getNombre());
+			statement.setInt(2, attraction.getValor());
+			statement.setDouble(3, attraction.getTiempo());
+			statement.setInt(4, attraction.getCupo());
 			int rows = statement.executeUpdate();
 
 			return rows;
@@ -87,12 +86,12 @@ public class AtraccionDAOImpl implements AtraccionDAO {
 			Connection conn = ConnectionProvider.getConnection();
 
 			PreparedStatement statement = conn.prepareStatement(sql);
-			int i = 1;
-			statement.setString(i, attraction.getNombre());
-			statement.setInt(i++, attraction.getPrecio());
-			statement.setDouble(i++, attraction.getTiempo());
-			statement.setInt(i++, attraction.getCupo());
-			statement.setInt(i++, attraction.getId());
+			
+			statement.setString(1, attraction.getNombre());
+			statement.setInt(2, attraction.getValor());
+			statement.setDouble(3, attraction.getTiempo());
+			statement.setInt(4, attraction.getCupo());
+			statement.setInt(5, attraction.getId());
 			int rows = statement.executeUpdate();
 
 			return rows;

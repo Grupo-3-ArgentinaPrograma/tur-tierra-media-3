@@ -3,10 +3,12 @@ package model;
 import java.util.*;
 
 import model.productos.*;
+import utils.Crypt;
 
 public class User {
 	private Integer id;
-	private String nombre, password;
+	private String nombre;
+	private String password;
 	private Boolean admin;
 	private TipoAtraccion atraccionPreferida;// preferenci@Override
 	private Integer monedas;// presupuesto
@@ -53,11 +55,24 @@ public class User {
 	public Integer getGasto() {
 		return gasto;
 	}
+	
+	public Integer getId() {
+		return id;
+	}
 
 	public List<Producto> getCompras() {
 		return compras;
 	}
+	
+	public String getPassword() {
+		return password;
+	}
 
+	public boolean checkPassword(String password) {
+		// this.password en realidad es el hash del password
+		return Crypt.match(password, this.password);
+	}
+	
 	public void setComprasRealizadas(String comprasStr, List<Atraccion> atracciones, List<Promo> promociones) {
 		for (String compra : comprasStr.split("/")) {
 			for (Atraccion atraccion : atracciones) {
@@ -90,7 +105,7 @@ public class User {
 	}
 
 	public Boolean puedeComprar(Producto producto) {
-		return ((this.getMonedas() >= producto.getPrecio()) && (this.getTiempoDisponible() >= producto.getTiempo()))
+		return ((this.getMonedas() >= producto.getValor()) && (this.getTiempoDisponible() >= producto.getTiempo()))
 				&& (!producto.contieneAtraccion(compras));
 	}
 
@@ -114,9 +129,9 @@ public class User {
 
 	// compra una sola atraccion
 	public void comprar(Atraccion atraccion) {
-		this.monedas -= atraccion.getPrecio();
+		this.monedas -= atraccion.getValor();
 		this.tiempo -= atraccion.getTiempo();
-		this.gasto += atraccion.getPrecio();
+		this.gasto += atraccion.getValor();
 		this.hsAConsumir += atraccion.getTiempo();
 		atraccion.setCupo(atraccion.getCupo() - 1);
 		compras.add(atraccion);
@@ -145,7 +160,31 @@ public class User {
 				+ monedas + ", Tiempo Disponible : " + tiempo + "\nCompras Realizadas : " + compras.toString()
 				+ "\nGasto Total : " + gasto + ", Horas a Consumir : " + hsAConsumir;
 	}
+	
+	public void setPassword(String password) {
+		this.password = Crypt.hash(password);
+	}
+	
+	public boolean isValid() {
+		validate();
+		return errors.isEmpty();
+	}
+	
+	public void validate() {
+		errors = new HashMap<String, String>();
 
+		if (monedas < 0) {
+			errors.put("coins", "No debe ser negativo");
+		}
+		if (tiempo < 0) {
+			errors.put("time", "No debe ser negativo");
+		}
+	}
+	
+	public Map<String, String> getErrors() {
+		return errors;
+	}
+	
 	public boolean isNull() {
 		// TODO Auto-generated method stub
 		return false;

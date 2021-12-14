@@ -15,6 +15,6 @@ public class PromoAbsoluta extends Promo{
 
 	@Override
 	public Integer precio(List<Atraccion> atracciones) {
-		return getPrecio();
+		return getValor();
 	}
 }

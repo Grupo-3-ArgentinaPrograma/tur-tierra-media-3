@@ -2,11 +2,13 @@ package model.productos;
 
 import java.util.List;
 
+
 public abstract class Producto{
 	protected TipoAtraccion tipo;
 	protected String nombre;
 	protected Integer valor;
 	protected Double tiempo;
+	protected Integer id;
 	
 	public Producto(TipoAtraccion tipo, String nombre, Integer valor, Double tiempo) {
 		this.tipo = tipo;
@@ -24,13 +26,17 @@ public abstract class Producto{
 	}
 	
 	public void setNombre(String nombre) {
-		if(nombre !=null && nombre != "") {
+		if (!nombre.isBlank()) {
 			this.nombre = nombre;
 		}
 	}
 
-	public Integer getPrecio() {
+	public Integer getValor() {
 		return valor;
+	}
+	
+	public Integer getId() {
+		return id;
 	}
 
 	public void setPrecio(Integer precio) {

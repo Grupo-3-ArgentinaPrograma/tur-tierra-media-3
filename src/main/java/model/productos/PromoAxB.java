@@ -24,7 +24,7 @@ public class PromoAxB extends Promo{
 		for (String nombreAtraccion:this.getNombres_atracciones()) {
 			for (Atraccion atraccion : atracciones) {
 				if (nombreAtraccion.equals(atraccion.getNombre()) && !nombreAtraccion.equals(atraccionGratuita)) {
-					 resultado += atraccion.getPrecio();
+					 resultado += atraccion.getValor();
 				}
 			}
 		}

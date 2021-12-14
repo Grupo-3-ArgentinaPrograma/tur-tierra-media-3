@@ -21,10 +21,10 @@ public class UserDAOImpl implements UserDAO {
 			Connection conn = ConnectionProvider.getConnection();
 
 			PreparedStatement statement = conn.prepareStatement(sql);
-			statement.setString(1, user.getUsername());
+			statement.setString(1, user.getNombre());
 			statement.setString(2, user.getPassword());
-			statement.setInt(3, user.getCoins());
-			statement.setDouble(4, user.getTime());
+			statement.setInt(3, user.getMonedas());
+			statement.setDouble(4, user.getTiempoDisponible());
 			int rows = statement.executeUpdate();
 
 			return rows;
@@ -39,8 +39,8 @@ public class UserDAOImpl implements UserDAO {
 			Connection conn = ConnectionProvider.getConnection();
 
 			PreparedStatement statement = conn.prepareStatement(sql);
-			statement.setInt(1, user.getCoins());
-			statement.setDouble(2, user.getTime());
+			statement.setInt(1, user.getMonedas());
+			statement.setDouble(2, user.getTiempoDisponible());
 			statement.setDouble(3, user.getId());
 			int rows = statement.executeUpdate();
 
@@ -56,7 +56,7 @@ public class UserDAOImpl implements UserDAO {
 			Connection conn = ConnectionProvider.getConnection();
 
 			PreparedStatement statement = conn.prepareStatement(sql);
-			statement.setString(1, user.getUsername());
+			statement.setString(1, user.getNombre());
 			int rows = statement.executeUpdate();
 
 			return rows;
@@ -142,19 +142,40 @@ public class UserDAOImpl implements UserDAO {
 
 	private User toUser(ResultSet userRegister) throws SQLException {
 		return new User(userRegister.getInt(1), userRegister.getString(2), userRegister.getString(3),
-				userRegister.getInt(5), userRegister.getDouble(6), userRegister.getBoolean(4));
+				null, userRegister.getInt(5), userRegister.getDouble(6), userRegister.getBoolean(4));
 	}
 
 	@Override
-	public int saveItinerario(User u) throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+	public int saveItinerario(User t) {
+		int rows=0;
+		try {
+			Connection conn = ConnectionProvider.getConnection();
+			String sql = "INSERT INTO ITINERARIO (U_NOMBRE, COMPRAS, GASTO_TOTAL, TIEMPO_TOTAL) VALUES (?, ?, ?, ?)";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setString(1, t.getNombre());
+			statement.setString(2, t.getStringCompras());
+			statement.setInt(3, t.getGasto());
+			statement.setDouble(4, t.getHsAConsumir());
+			rows = statement.executeUpdate();
+		} catch (Exception e) {
+			throw new MissingDataException(e);
+		}
+		return rows;
 	}
 
 	@Override
-	public String getComprasRealizadas(User u) {
-		// TODO Auto-generated method stub
-		return null;
+	public String getComprasRealizadas(User u){
+		try {
+			Connection conn = ConnectionProvider.getConnection();
+			String sql = "SELECT COMPRAS FROM ITINERARIO WHERE U_NOMBRE=?";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setString(1, u.getNombre());
+			ResultSet resultados = statement.executeQuery();
+
+			return resultados.toString();
+		} catch (Exception e) {
+			throw new MissingDataException(e);
+		}
 	}
 
 }

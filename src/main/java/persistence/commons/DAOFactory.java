@@ -1,8 +1,10 @@
 package persistence.commons;
 
 import persistence.AtraccionDAO;
+import persistence.PromoDAO;
 import persistence.UserDAO;
 import persistence.impl.AtraccionDAOImpl;
+import persistence.impl.PromoDAOImpl;
 import persistence.impl.UserDAOImpl;
 
 public class DAOFactory {

@@ -16,7 +16,7 @@ public class PromoPorcentual extends Promo{
 			 //buscar atraccion en atracciones, si esta lo sumo
 			for (Atraccion atraccion : atracciones) {
 				if (atraccion.getNombre().equals(nombre_atraccion)) {
-					 resultado += atraccion.getPrecio();
+					 resultado += atraccion.getValor();
 				}
 			}
 		}
