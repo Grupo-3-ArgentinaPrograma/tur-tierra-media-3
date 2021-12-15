@@ -56,11 +56,11 @@ public class UserDAOImpl implements UserDAO {
 
 	public int delete(User user) {
 		try {
-			String sql = "DELETE FROM USERS WHERE NOMBRE = ?";
+			String sql = "UPDATE USERS SET BORRADO = 1 WHERE ID = ?";
 			Connection conn = ConnectionProvider.getConnection();
 
 			PreparedStatement statement = conn.prepareStatement(sql);
-			statement.setString(1, user.getNombre());
+			statement.setInt(1, user.getId());
 			int rows = statement.executeUpdate();
 
 			return rows;
@@ -153,10 +153,10 @@ public class UserDAOImpl implements UserDAO {
 		return usuario;
 	}
 
-	
 	public int saveItinerario(User t) {
 		int rows = 0;
 		try {
+			deleteItinerario(t);
 			Connection conn = ConnectionProvider.getConnection();
 			String sql = "INSERT INTO ITINERARIOS (FK_USER, COSTO_TOTAL, TIEMPO_TOTAL) VALUES (?, ?, ?)";
 			PreparedStatement statement = conn.prepareStatement(sql);
@@ -169,27 +169,58 @@ public class UserDAOImpl implements UserDAO {
 		}
 		return rows;
 	}
+
+	public int deleteItinerario(User t) {
+		try {
+			String sql = "DELETE FROM ITINERARIOS WHERE FK_USER = ?";
+			Connection conn = ConnectionProvider.getConnection();
+
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setInt(1, t.getId());
+			int rows = statement.executeUpdate();
+
+			return rows;
+		} catch (Exception e) {
+			throw new MissingDataException(e);
+		}
+	}
 	
+	public int deleteCompras(User t) {
+		try {
+			String sql = "DELETE FROM COMPRAS_ITINERARIOS WHERE FK_ITINERARIO = ?";
+			Connection conn = ConnectionProvider.getConnection();
+
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setInt(1, t.getId());
+			int rows = statement.executeUpdate();
+
+			return rows;
+		} catch (Exception e) {
+			throw new MissingDataException(e);
+		}
+	}
+
 	@Override
 	public int saveCompras(User t) {
 		int rows = 0;
 		try {
 			saveItinerario(t);
+			deleteCompras(t);
 			Connection conn = ConnectionProvider.getConnection();
 			String sql = "INSERT INTO COMPRAS_ITINERARIOS (FK_ITINERARIO, FK_PROMO, FK_ATRACCION) VALUES (?, ?, ?)";
 			PreparedStatement statement = conn.prepareStatement(sql);
 			statement.setInt(1, t.getId());
-			for(Producto P: t.getCompras() ) {
-				if(P instanceof Promo) {
-					statement.setInt(2,((Promo)P).getId());
-					for(Integer idAtraccion:((Promo) P).getId_atracciones()) {
-						statement.setInt(3,idAtraccion);
+			for (Producto P : t.getCompras()) {
+				if (P instanceof Promo) {
+					statement.setInt(2, ((Promo) P).getId());
+					for (Integer idAtraccion : ((Promo) P).getId_atracciones()) {
+						statement.setInt(3, idAtraccion);
 						rows = statement.executeUpdate();
 					}
 				}
-				if(P instanceof Atraccion) {
-					statement.setNull(2,java.sql.Types.INTEGER);
-					statement.setInt(3,((Atraccion)P).getId());
+				if (P instanceof Atraccion) {
+					statement.setNull(2, java.sql.Types.INTEGER);
+					statement.setInt(3, ((Atraccion) P).getId());
 					rows = statement.executeUpdate();
 				}
 			}
@@ -198,7 +229,7 @@ public class UserDAOImpl implements UserDAO {
 		}
 		return rows;
 	}
-	
+
 	@Override
 	public List<Integer> getPromosCompradas(User u) {
 		try {
@@ -218,7 +249,7 @@ public class UserDAOImpl implements UserDAO {
 			throw new MissingDataException(e);
 		}
 	}
-	
+
 	@Override
 	public List<Integer> getAtraccionesSolasCompradas(User u) {
 		try {

@@ -15,13 +15,18 @@ public class User {
 	private Integer gasto;
 	private Double hsAConsumir;
 	private HashMap<String, String> errors;
-	private List<Integer>id_atraccionesCompradas;
-	private List<Integer>id_promosCompradas;
-	private List<Producto>compras;
+	private List<Integer> id_atraccionesCompradas;
+	private List<Integer> id_promosCompradas;
+	private List<Producto> compras;
 
 	public User(Integer id, String nombre, String password, TipoAtraccion atraccionPreferida, Integer monedas,
 			Double tiempoDisponible, Boolean admin) {
+		this(nombre,password,atraccionPreferida,monedas,tiempoDisponible, admin);
 		this.id = id;
+	}
+	
+	public User(String nombre, String password, TipoAtraccion atraccionPreferida, Integer monedas,
+			Double tiempoDisponible, Boolean admin) {
 		this.nombre = nombre;
 		this.password = password;
 		this.monedas = monedas;
@@ -37,16 +42,32 @@ public class User {
 		return nombre;
 	}
 
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
 	public TipoAtraccion getAtraccionPreferida() {
 		return atraccionPreferida;
+	}
+	
+	public void setAtraccionPreferida(TipoAtraccion tipoAtraccion) {
+		this.atraccionPreferida=tipoAtraccion;
 	}
 
 	public Integer getMonedas() {
 		return monedas;
 	}
 
+	public void setMonedas(Integer monedas) {
+		this.monedas = monedas;
+	}
+
 	public Double getTiempoDisponible() {
 		return tiempo;
+	}
+
+	public void setTiempoDisponible(Double tiempo) {
+		this.tiempo = tiempo;
 	}
 
 	public Double getHsAConsumir() {
@@ -56,11 +77,11 @@ public class User {
 	public Integer getGasto() {
 		return gasto;
 	}
-	
+
 	public Integer getId() {
 		return id;
 	}
-	
+
 	public List<Integer> getId_atraccionesCompradas() {
 		return id_atraccionesCompradas;
 	}
@@ -85,28 +106,27 @@ public class User {
 		// this.password en realidad es el hash del password
 		return Crypt.match(password, this.password);
 	}
-	
+
 	public void setComprasRealizadas(List<Promo> lista_promos, List<Atraccion> lista_atracciones) {
-		for(Promo P:lista_promos) {
-			for(Integer idPromo:getId_promosCompradas()) {
-				if(idPromo.equals(P.getId())) {
+		for (Promo P : lista_promos) {
+			for (Integer idPromo : getId_promosCompradas()) {
+				if (idPromo.equals(P.getId())) {
 					compras.add(P);
 				}
 			}
 		}
-		for(Atraccion A:lista_atracciones) {
-			for(Integer idAtraccion:getId_atraccionesCompradas()) {
-				if(idAtraccion.equals(A.getId())) {
+		for (Atraccion A : lista_atracciones) {
+			for (Integer idAtraccion : getId_atraccionesCompradas()) {
+				if (idAtraccion.equals(A.getId())) {
 					compras.add(A);
 				}
 			}
 		}
 	}
-	
-	public List<Producto> getCompras(){
+
+	public List<Producto> getCompras() {
 		return this.compras;
 	}
-
 
 	public Boolean puedeComprar(Producto producto) {
 		return (this.tieneTiempoPara(producto) && this.tieneMonedasPara(producto))
@@ -114,7 +134,7 @@ public class User {
 	}
 
 	public Boolean tieneTiempoPara(Producto p) {
-		return getTiempoDisponible() >= p.getTiempo() ;
+		return getTiempoDisponible() >= p.getTiempo();
 	}
 
 	public Boolean tieneMonedasPara(Producto p) {
@@ -137,7 +157,8 @@ public class User {
 		this.tiempo -= atraccion.getTiempo();
 		this.gasto += atraccion.getValor();
 		this.hsAConsumir += atraccion.getTiempo();
-		atraccion.setCupo(atraccion.getCupo() - 1);
+		atraccion.reducirCupo(1);
+		;
 		compras.add(atraccion);
 	}
 
@@ -164,16 +185,19 @@ public class User {
 				+ monedas + ", Tiempo Disponible : " + tiempo + "\nCompras Realizadas : " + compras.toString()
 				+ "\nGasto Total : " + gasto + ", Horas a Consumir : " + hsAConsumir;
 	}
-	
+
+	/*
+	 * hashea la password
+	 */
 	public void setPassword(String password) {
 		this.password = Crypt.hash(password);
 	}
-	
+
 	public boolean isValid() {
 		validate();
 		return errors.isEmpty();
 	}
-	
+
 	public void validate() {
 		errors = new HashMap<String, String>();
 
@@ -184,17 +208,21 @@ public class User {
 			errors.put("time", "No debe ser negativo");
 		}
 	}
-	
+
 	public Map<String, String> getErrors() {
 		return errors;
 	}
-	
+
 	public boolean isNull() {
 		return false;
 	}
 
-	public Boolean getAdmin() {
+	public Boolean isAdmin() {
 		return admin;
+	}
+	
+	public Integer getAdmin() {
+		return isAdmin()?1:0;
 	}
 
 	public void setAdmin(Boolean admin) {

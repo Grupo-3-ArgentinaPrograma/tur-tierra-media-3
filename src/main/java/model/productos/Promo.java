@@ -1,10 +1,13 @@
 package model.productos;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class Promo extends Producto {
 	protected List<Integer> id_atracciones;
 	protected Integer id;
+	private Map<String, String> errors;
 
 	// valor : si es absoluta sera el valor final de la promo, si es porcentual sera
 	// el valor del descuento, si es AxB no se usara
@@ -36,7 +39,7 @@ public abstract class Promo extends Producto {
 		for (Atraccion atraccion : atracciones) {
 			for (Integer id_element : id_atracciones) {
 				if (id_element.equals(atraccion.getId())) {
-					atraccion.setCupo(atraccion.getCupo() - 1);
+					atraccion.reducirCupo(1);;
 					break;
 				}
 			}
@@ -56,9 +59,9 @@ public abstract class Promo extends Producto {
 		return true;
 	}
 
-	public void establecerHsPromo(Promo promo, List<Atraccion> atracciones) {
+	public void establecerHsPromo(List<Atraccion> atracciones) {
 		Double sumaTiempos = 0d;
-		for (Integer id_atraccion : promo.id_atracciones) {
+		for (Integer id_atraccion : this.id_atracciones) {
 			// filtro
 			for (Atraccion atraccion : atracciones) {
 				if (atraccion.getId().equals(id_atraccion)) {
@@ -67,11 +70,37 @@ public abstract class Promo extends Producto {
 				}
 			}
 		}
-		promo.setTiempo(sumaTiempos);
+		this.setTiempo(sumaTiempos);
 	}
 
-	public void establecerPrecioPromo(Promo promo, List<Atraccion> atracciones) {
-		promo.setPrecio(promo.precio(atracciones));
+	public boolean isValid(List<Atraccion> atracciones) {
+		validate(atracciones);
+		return errors.isEmpty();
+	}
+
+	public void validate(List<Atraccion> atracciones) {
+		errors = new HashMap<String, String>();
+
+		if (valor <= 0) {
+			errors.put("cost", "Debe ser positivo");
+		}
+		if (tiempo <= 0) {
+			errors.put("duration", "Debe ser positivo");
+		}
+		if (tiempo >= 60) {
+			errors.put("duration", "Excede el tiempo máximo");
+		}
+		if (this.hayCupo(atracciones)){
+			errors.put("capacity", "No hay cupo");
+		}
+	}
+	
+	public Map<String, String> getErrors() {
+		return errors;
+	}
+	
+	public void establecerPrecioPromo(List<Atraccion> atracciones) {
+		this.setPrecio(this.precio(atracciones));
 	}
 
 	public List<Integer> getId_atracciones() {

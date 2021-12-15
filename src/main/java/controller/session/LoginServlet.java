@@ -13,7 +13,8 @@ import services.LoginService;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-	private static final long serialVersionUID = 8308079314140233763L;
+	
+	private static final long serialVersionUID = -46688658298314031L;
 	private LoginService loginService;
 
 	@Override

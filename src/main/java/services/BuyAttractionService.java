@@ -34,6 +34,7 @@ public class BuyAttractionService {
 
 			attractionDAO.update(attraction);
 			userDAO.update(user);
+			userDAO.saveCompras(user);
 		}
 
 		return errors;

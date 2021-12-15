@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
+
+import persistence.AtraccionDAO;
 import persistence.PromoDAO;
 import persistence.commons.*;
 import model.productos.*;
@@ -49,6 +51,9 @@ public class PromoDAOImpl implements PromoDAO {
 				promocion = new PromoPorcentual(id, tipo, nombre, descripcion, id_atracciones, resultados.getInt(6));
 				break;
 			}
+			AtraccionDAO attractionDAO = DAOFactory.getAttractionDAO();
+			promocion.establecerHsPromo(attractionDAO.findAll());
+			promocion.establecerPrecioPromo(attractionDAO.findAll());
 		} catch (Exception e) {
 			throw new MissingDataException(e);
 		}
@@ -69,24 +74,41 @@ public class PromoDAOImpl implements PromoDAO {
 			statement.setString(4, t.getTipo().name());
 
 			switch (t.getTipoPromo()) {
-			case "Absoluta":
+			case "ABSOLUTA":
 				statement.setNull(5, java.sql.Types.INTEGER);
 				statement.setInt(6, t.getValor());
 				statement.setNull(7, java.sql.Types.INTEGER);
 				break;
-			case "AxB":
+			case "AXB":
 				statement.setNull(5, java.sql.Types.INTEGER);
 				statement.setNull(6, java.sql.Types.INTEGER);
 				statement.setInt(7, ((PromoAxB) t).getAtraccionGratuita());
 				break;
-			case "Porcentual":
+			case "PORCENTUAL":
 				statement.setInt(5, t.getValor());
 				statement.setNull(6, java.sql.Types.INTEGER);
 				statement.setNull(7, java.sql.Types.INTEGER);
 				break;
 			}
 			int rows = statement.executeUpdate();
+			insert_AttractionsInPromo(t.getId_atracciones(),t);
+			return rows;
+		} catch (Exception e) {
+			throw new MissingDataException(e);
+		}
+	}
 
+	public int insert_AttractionsInPromo(List<Integer> idAttractions, Promo p) {
+		int rows = 0;
+		try {
+			String sql = "INSERT INTO ATTRACTIONS_IN_PROMOS (FK_ATRACCION, FK_PROMO) VALUES (?, ?)";
+			Connection conn = ConnectionProvider.getConnection();
+			PreparedStatement statement = conn.prepareStatement(sql);
+			for (Integer idAtraccion : idAttractions) {
+				statement.setInt(1, idAtraccion);
+				statement.setInt(2, p.getId());
+				rows += statement.executeUpdate();
+			}
 			return rows;
 		} catch (Exception e) {
 			throw new MissingDataException(e);
