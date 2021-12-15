@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.productos.Atraccion;
+import model.productos.TipoAtraccion;
 import services.AttractionService;
 
 @WebServlet("/attractions/edit.do")
@@ -39,12 +40,13 @@ public class EditAttractionServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		Integer id = Integer.parseInt(req.getParameter("id"));
 		String name = req.getParameter("name");
+		String description = req.getParameter("description");
 		Integer cost = Integer.parseInt(req.getParameter("cost"));
-		// Integer cost = req.getParameter("cost").trim() == "" ? null : Integer.parseInt(req.getParameter("cost"));
 		Double duration = Double.parseDouble(req.getParameter("duration"));
 		Integer capacity = Integer.parseInt(req.getParameter("capacity"));
+		TipoAtraccion type = TipoAtraccion.valueOf(req.getParameter("type"));
 
-		Atraccion attraction = attractionService.update(id, name, cost, duration, capacity);
+		Atraccion attraction = attractionService.update(id, name, description, cost, duration, capacity, type);
 
 		if (attraction.isValid()) {
 			resp.sendRedirect("/turismo/attractions/index.do");

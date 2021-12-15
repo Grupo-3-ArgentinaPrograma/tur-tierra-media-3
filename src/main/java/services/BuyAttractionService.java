@@ -2,7 +2,6 @@ package services;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import model.productos.*;
 import model.User;
 import persistence.AtraccionDAO;
@@ -20,19 +19,18 @@ public class BuyAttractionService {
 		User user = userDAO.find(userId);
 		Atraccion attraction = attractionDAO.find(attractionId);
 
-		if (!attraction.canHost(1)) {
+		if (!attraction.hayCupoPara(1)) {
 			errors.put("attraction", "No hay cupo disponible");
 		}
-		if (!user.canAfford(attraction)) {
+		if (!user.tieneMonedasPara(attraction)) {
 			errors.put("user", "No tienes dinero suficiente");
 		}
-		if (!user.canAttend(attraction)) {
+		if (!user.tieneTiempoPara(attraction)) {
 			errors.put("user", "No tienes tiempo suficiente");
 		}
 
 		if (errors.isEmpty()) {
-			user.addToItinerary(attraction);
-			attraction.host(1);
+			user.comprar(attraction);
 
 			attractionDAO.update(attraction);
 			userDAO.update(user);

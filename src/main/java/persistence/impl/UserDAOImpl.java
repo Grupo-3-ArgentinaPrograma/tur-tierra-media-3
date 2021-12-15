@@ -9,6 +9,10 @@ import java.util.List;
 
 import model.User;
 import model.nullobjects.NullUser;
+import model.productos.Atraccion;
+import model.productos.Producto;
+import model.productos.Promo;
+import model.productos.TipoAtraccion;
 import persistence.UserDAO;
 import persistence.commons.ConnectionProvider;
 import persistence.commons.MissingDataException;
@@ -17,7 +21,7 @@ public class UserDAOImpl implements UserDAO {
 
 	public int insert(User user) {
 		try {
-			String sql = "INSERT INTO USERS (USERNAME, PASSWORD, COINS, TIME) VALUES (?, ?, ?, ?)";
+			String sql = "INSERT INTO USERS (NOMBRE, PASSWORD, MONEDAS, TIEMPO, TIPO_PREFERENCIA, BORRADO, ADMIN) VALUES (?, ?, ?, ?)";
 			Connection conn = ConnectionProvider.getConnection();
 
 			PreparedStatement statement = conn.prepareStatement(sql);
@@ -52,7 +56,7 @@ public class UserDAOImpl implements UserDAO {
 
 	public int delete(User user) {
 		try {
-			String sql = "DELETE FROM USERS WHERE USERNAME = ?";
+			String sql = "DELETE FROM USERS WHERE NOMBRE = ?";
 			Connection conn = ConnectionProvider.getConnection();
 
 			PreparedStatement statement = conn.prepareStatement(sql);
@@ -67,7 +71,7 @@ public class UserDAOImpl implements UserDAO {
 
 	public User findByUsername(String username) {
 		try {
-			String sql = "SELECT * FROM USERS WHERE USERNAME = ?";
+			String sql = "SELECT * FROM USERS WHERE NOMBRE = ?";
 			Connection conn = ConnectionProvider.getConnection();
 			PreparedStatement statement = conn.prepareStatement(sql);
 			statement.setString(1, username);
@@ -141,38 +145,95 @@ public class UserDAOImpl implements UserDAO {
 	}
 
 	private User toUser(ResultSet userRegister) throws SQLException {
-		return new User(userRegister.getInt(1), userRegister.getString(2), userRegister.getString(3),
-				null, userRegister.getInt(5), userRegister.getDouble(6), userRegister.getBoolean(4));
+		User usuario = new User(userRegister.getInt(1), userRegister.getString(2), userRegister.getString(3),
+				TipoAtraccion.valueOf(userRegister.getString(6)), userRegister.getInt(4), userRegister.getDouble(5),
+				userRegister.getBoolean(8));
+		usuario.setId_atraccionesCompradas(getAtraccionesSolasCompradas(usuario));
+		usuario.setId_promosCompradas(getPromosCompradas(usuario));
+		return usuario;
 	}
 
-	@Override
+	
 	public int saveItinerario(User t) {
-		int rows=0;
+		int rows = 0;
 		try {
 			Connection conn = ConnectionProvider.getConnection();
-			String sql = "INSERT INTO ITINERARIO (U_NOMBRE, COMPRAS, GASTO_TOTAL, TIEMPO_TOTAL) VALUES (?, ?, ?, ?)";
+			String sql = "INSERT INTO ITINERARIOS (FK_USER, COSTO_TOTAL, TIEMPO_TOTAL) VALUES (?, ?, ?)";
 			PreparedStatement statement = conn.prepareStatement(sql);
-			statement.setString(1, t.getNombre());
-			statement.setString(2, t.getStringCompras());
-			statement.setInt(3, t.getGasto());
-			statement.setDouble(4, t.getHsAConsumir());
+			statement.setInt(1, t.getId());
+			statement.setInt(2, t.getGasto());
+			statement.setDouble(3, t.getHsAConsumir());
 			rows = statement.executeUpdate();
 		} catch (Exception e) {
 			throw new MissingDataException(e);
 		}
 		return rows;
 	}
-
+	
 	@Override
-	public String getComprasRealizadas(User u){
+	public int saveCompras(User t) {
+		int rows = 0;
 		try {
+			saveItinerario(t);
 			Connection conn = ConnectionProvider.getConnection();
-			String sql = "SELECT COMPRAS FROM ITINERARIO WHERE U_NOMBRE=?";
+			String sql = "INSERT INTO COMPRAS_ITINERARIOS (FK_ITINERARIO, FK_PROMO, FK_ATRACCION) VALUES (?, ?, ?)";
 			PreparedStatement statement = conn.prepareStatement(sql);
-			statement.setString(1, u.getNombre());
+			statement.setInt(1, t.getId());
+			for(Producto P: t.getCompras() ) {
+				if(P instanceof Promo) {
+					statement.setInt(2,((Promo)P).getId());
+					for(Integer idAtraccion:((Promo) P).getId_atracciones()) {
+						statement.setInt(3,idAtraccion);
+						rows = statement.executeUpdate();
+					}
+				}
+				if(P instanceof Atraccion) {
+					statement.setNull(2,java.sql.Types.INTEGER);
+					statement.setInt(3,((Atraccion)P).getId());
+					rows = statement.executeUpdate();
+				}
+			}
+		} catch (Exception e) {
+			throw new MissingDataException(e);
+		}
+		return rows;
+	}
+	
+	@Override
+	public List<Integer> getPromosCompradas(User u) {
+		try {
+
+			Connection conn = ConnectionProvider.getConnection();
+			String sql = "SELECT FK_PROMO AS ID_PROMO FROM COMPRAS_ITINERARIOS WHERE FK_ITINERARIO=? AND FK_PROMO IS NOT NULL GROUP BY FK_PROMO";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setInt(1, u.getId());
 			ResultSet resultados = statement.executeQuery();
 
-			return resultados.toString();
+			List<Integer> id_PromosCompradas = new LinkedList<Integer>();
+			while (resultados.next()) {
+				id_PromosCompradas.add(resultados.getInt("ID_PROMO"));
+			}
+			return id_PromosCompradas;
+		} catch (Exception e) {
+			throw new MissingDataException(e);
+		}
+	}
+	
+	@Override
+	public List<Integer> getAtraccionesSolasCompradas(User u) {
+		try {
+
+			Connection conn = ConnectionProvider.getConnection();
+			String sql = "SELECT FK_ATRACCION AS ID_ATRACCION FROM COMPRAS_ITINERARIOS WHERE FK_ITINERARIO=? AND FK_PROMO IS NULL";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setInt(1, u.getId());
+			ResultSet resultados = statement.executeQuery();
+
+			List<Integer> id_AtraccionesCompradas = new LinkedList<Integer>();
+			while (resultados.next()) {
+				id_AtraccionesCompradas.add(resultados.getInt("ID_ATRACCION"));
+			}
+			return id_AtraccionesCompradas;
 		} catch (Exception e) {
 			throw new MissingDataException(e);
 		}

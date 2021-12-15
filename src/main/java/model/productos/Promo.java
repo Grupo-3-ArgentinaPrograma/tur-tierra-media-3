@@ -3,23 +3,39 @@ package model.productos;
 import java.util.List;
 
 public abstract class Promo extends Producto {
-	protected String nombres_atracciones;
+	protected List<Integer> id_atracciones;
+	protected Integer id;
 
 	// valor : si es absoluta sera el valor final de la promo, si es porcentual sera
 	// el valor del descuento, si es AxB no se usara
-	public Promo(TipoAtraccion nombrePack, String nombrePromo, String nombres_atracciones, Integer valor) {
-		super(nombrePack, nombrePromo, valor, 0d);
-		this.nombres_atracciones = nombres_atracciones;
+	public Promo(TipoAtraccion tipoAtraccionPack, String nombrePromo, String descripcion, List<Integer> id_atracciones, Integer valor) {
+		super(tipoAtraccionPack, nombrePromo, descripcion, valor, 0d);
+		this.id_atracciones = id_atracciones;
+	}
+	
+	public Promo(Integer idPromo, String nombrePromo, String descripcion, List<Integer> id_atracciones, Integer valor, TipoAtraccion tipo) {
+		this(tipo, nombrePromo, descripcion, id_atracciones, valor);
+		this.setId(idPromo);
 	}
 
 	public abstract Integer precio(List<Atraccion> atracciones);
 
 	public abstract String getTipoPromo();
 
-	public void setCupos(List<Atraccion> atracciones, String[] elementos) {
+	public Integer getId() {
+		return id;
+	}
+	
+	public void setId(Integer id) {
+		if (id > 0) {
+			this.id = id;
+		}
+	}
+	
+	public void setCupos(List<Atraccion> atracciones) {
 		for (Atraccion atraccion : atracciones) {
-			for (String elemento : elementos) {
-				if (elemento.equals(atraccion.getNombre())) {
+			for (Integer id_element : id_atracciones) {
+				if (id_element.equals(atraccion.getId())) {
 					atraccion.setCupo(atraccion.getCupo() - 1);
 					break;
 				}
@@ -27,11 +43,11 @@ public abstract class Promo extends Producto {
 		}
 	}
 
-	public Boolean hayCupo(List<Atraccion> atracciones, String[] elementos) {
+	public Boolean hayCupo(List<Atraccion> atracciones) {
 		for (Atraccion atraccion : atracciones) {
-			for (String elemento : elementos) {
-				if (elemento.equals(atraccion.getNombre())) {
-					if (!atraccion.hayCupo()) {
+			for (Integer id_element : id_atracciones) {
+				if (id_element.equals(atraccion.getId())) {
+					if (!atraccion.hayCupoPara(1)) {
 						return false;
 					}
 				}
@@ -42,10 +58,10 @@ public abstract class Promo extends Producto {
 
 	public void establecerHsPromo(Promo promo, List<Atraccion> atracciones) {
 		Double sumaTiempos = 0d;
-		for (String nombre_atraccion : promo.getNombres_atracciones()) {
+		for (Integer id_atraccion : promo.id_atracciones) {
 			// filtro
 			for (Atraccion atraccion : atracciones) {
-				if (atraccion.getNombre().equals(nombre_atraccion)) {
+				if (atraccion.getId().equals(id_atraccion)) {
 					sumaTiempos += atraccion.getTiempo();
 					break;
 				}
@@ -58,17 +74,14 @@ public abstract class Promo extends Producto {
 		promo.setPrecio(promo.precio(atracciones));
 	}
 
-	public String[] getNombres_atracciones() {
-		return nombres_atracciones.split("-");
+	public List<Integer> getId_atracciones() {
+		return id_atracciones;
 	}
 
 	@Override
 	public String toString() {
-		return "Promo ( " + nombre + ", Tipo de Promo : " + tipo + ", Atracciones incluidas : " + nombres_atracciones
+		return "Promo ( " + nombre + ", Tipo de Promo : " + tipo
 				+ ", Precio : " + valor + ", Tiempo total : " + tiempo + ")";
 	}
 
-	public String nombresAtracciones() {
-		return nombres_atracciones;
-	}
 }

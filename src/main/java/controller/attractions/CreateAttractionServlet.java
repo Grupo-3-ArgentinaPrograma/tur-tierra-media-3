@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.productos.Atraccion;
+import model.productos.TipoAtraccion;
 import services.AttractionService;
 
 @WebServlet("/attractions/create.do")
@@ -25,27 +26,33 @@ public class CreateAttractionServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-		RequestDispatcher dispatcher = getServletContext()
-				.getRequestDispatcher("/views/attractions/create.jsp");
+		RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/views/attractions/create.jsp");
 		dispatcher.forward(req, resp);
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String name = req.getParameter("name");
+		String description = req.getParameter("description");
 		Integer cost = Integer.parseInt(req.getParameter("cost"));
 		Double duration = Double.parseDouble(req.getParameter("duration"));
 		Integer capacity = Integer.parseInt(req.getParameter("capacity"));
-
-		Atraccion attraction = attractionService.create(name, cost, duration, capacity);
+		TipoAtraccion type = TipoAtraccion.valueOf(req.getParameter("type"));
+		Atraccion attraction = attractionService.findByNombreAtraccion(name);
+		if ( attraction != null) {
+			Integer id = attraction.getId();
+			attraction = attractionService.update(id, name, description, cost, duration, capacity, type);
+		} else {
+			attraction = attractionService.create(name, description, cost, duration, capacity, type);
+		}
+		
 		
 		if (attraction.isValid()) {
 			resp.sendRedirect("/turismo/attractions/index.do");
 		} else {
 			req.setAttribute("attraction", attraction);
 
-			RequestDispatcher dispatcher = getServletContext()
-					.getRequestDispatcher("/views/attractions/create.jsp");
+			RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/views/attractions/create.jsp");
 			dispatcher.forward(req, resp);
 		}
 

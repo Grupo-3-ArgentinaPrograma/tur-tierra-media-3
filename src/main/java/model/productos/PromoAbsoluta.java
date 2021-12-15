@@ -2,15 +2,21 @@ package model.productos;
 
 import java.util.List;
 
-public class PromoAbsoluta extends Promo{
-	
-	public PromoAbsoluta(TipoAtraccion tipoPack, String nombrePromo, String nombres_atracciones, Integer valorAbs) {
-		super(tipoPack, nombrePromo, nombres_atracciones, valorAbs);
+public class PromoAbsoluta extends Promo {
+
+	public PromoAbsoluta(TipoAtraccion tipoPack, String nombrePromo, String descripcion, List<Integer> id_atracciones,
+			Integer valorAbs) {
+		super(tipoPack, nombrePromo, descripcion, id_atracciones, valorAbs);
 	}
-	
+
+	public PromoAbsoluta(Integer id, TipoAtraccion tipoPack, String nombrePromo, String descripcion,
+			List<Integer> id_atracciones, Integer valorAbs) {
+		super(id, nombrePromo, descripcion, id_atracciones, valorAbs, tipoPack);
+	}
+
 	@Override
 	public String getTipoPromo() {
-		return "Absoluta";
+		return "ABSOLUTA";
 	}
 
 	@Override

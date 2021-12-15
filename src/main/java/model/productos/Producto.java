@@ -8,19 +8,24 @@ public abstract class Producto{
 	protected String nombre;
 	protected Integer valor;
 	protected Double tiempo;
-	protected Integer id;
+	protected String descripcion;
 	
-	public Producto(TipoAtraccion tipo, String nombre, Integer valor, Double tiempo) {
-		this.tipo = tipo;
-		this.setTiempo(tiempo);;
+	public Producto(TipoAtraccion tipo, String nombre,String descripcion, Integer valor, Double tiempo) {
+		this.setTipo(tipo);
+		this.setTiempo(tiempo);
 		this.setPrecio(valor);
 		this.setNombre(nombre);
+		this.setDescripcion(descripcion);
 	}
 	
 	public TipoAtraccion getTipo() {
 		return tipo;
 	}
-
+	
+	public void setTipo(TipoAtraccion tipo) {
+		this.tipo=tipo;
+	}
+	
 	public String getNombre() {
 		return this.nombre;
 	}
@@ -30,15 +35,22 @@ public abstract class Producto{
 			this.nombre = nombre;
 		}
 	}
+	
+	public String getDescripcion() {
+		return this.descripcion;
+	}
+	
+	public void setDescripcion(String descripcion) {
+		if (!descripcion.isBlank()) {
+			this.descripcion = descripcion;
+		}
+	}
 
 	public Integer getValor() {
 		return valor;
 	}
-	
-	public Integer getId() {
-		return id;
-	}
 
+	
 	public void setPrecio(Integer precio) {
 		if(precio>0) {
 			this.valor = precio;	
@@ -59,17 +71,17 @@ public abstract class Producto{
 		if (this instanceof Promo) {
 			for (Producto compra : compras) {
 				if (compra instanceof Promo) { // Promo - Promo
-					for (String nombreP : ((Promo) this).getNombres_atracciones()) {
-						for (String nombreC : ((Promo) compra).getNombres_atracciones()) {
-							if ( nombreP.equals(nombreC) ) {
+					for (Integer id_P : ((Promo) this).getId_atracciones()) {
+						for (Integer id_C : ((Promo) compra).getId_atracciones()) {
+							if ( id_P.equals(id_C) ) {
 								return true;	
 							}
 						}
 						
 					}					
 				} else { // Promo - Atraccion
-					for (String nombreP : ((Promo) this).getNombres_atracciones()) {
-						if ( nombreP.equals(((Atraccion) compra).getNombre()) ) {
+					for (Integer id_P : ((Promo) this).getId_atracciones()) {
+						if ( id_P.equals(((Atraccion) compra).getId()) ) {
 							return true;	
 						}
 					}
@@ -78,13 +90,13 @@ public abstract class Producto{
 		} else {
 			for (Producto compra : compras) {
 				if (compra instanceof Promo) { // Atraccion - Promo
-					for (String nombreC : ((Promo) compra).getNombres_atracciones()) {
-						if ( nombreC.equals( ((Atraccion) this).getNombre() ) ) {
+					for (Integer id_C : ((Promo) compra).getId_atracciones()) {
+						if ( id_C.equals( ((Atraccion) this).getId() ) ) {
 							return true;	
 						}
 					}					
 				} else { // Atraccion - Atraccion
-					if ( ((Atraccion) compra).getNombre().equals( ((Atraccion) this).getNombre() ) ) {
+					if ( ((Atraccion) compra).getId().equals( ((Atraccion) this).getId() ) ) {
 							return true;	
 						}
 					

@@ -2,36 +2,47 @@ package model.productos;
 
 import java.util.List;
 
-public class PromoAxB extends Promo{
-	
-	private String atraccionGratuita;
-	
-	public String getAtraccionGratuita() {
-		return atraccionGratuita;
+public class PromoAxB extends Promo {
+
+	private Integer idAtraccionGratuita;
+
+	public Integer getAtraccionGratuita() {
+		return idAtraccionGratuita;
 	}
-	public void setAtraccionGratuita(String atraccionGratuita) {
-		this.atraccionGratuita = atraccionGratuita;
+
+	public void setAtraccionGratuita(Integer atraccionGratuita) {
+		this.idAtraccionGratuita = atraccionGratuita;
 	}
-	public PromoAxB(TipoAtraccion tipoPack, String nombrePromo, String nombres_atracciones, String atraccionGratis) {
-		super(tipoPack, nombrePromo, nombres_atracciones, 0);
-		setAtraccionGratuita(atraccionGratis);
+
+	public PromoAxB(TipoAtraccion tipoPack, String nombrePromo, String descripcion, List<Integer> id_atracciones,
+			Integer idAtraccionGratis) {
+		super(tipoPack, nombrePromo, descripcion, id_atracciones, 0);
+		this.setAtraccionGratuita(idAtraccionGratis);
 	}
-	
-	//devuelve la suma de precios de las atracciones compradas, menos la que es gratis
+
+	public PromoAxB(Integer id, TipoAtraccion tipoPack, String nombrePromo, String descripcion,
+			List<Integer> id_atracciones, Integer idAtraccionGratis) {
+		super(id, nombrePromo, descripcion, id_atracciones, 0, tipoPack);
+		this.setAtraccionGratuita(idAtraccionGratis);
+	}
+
+	// devuelve la suma de precios de las atracciones compradas, menos la que es
+	// gratis
 	@Override
 	public Integer precio(List<Atraccion> atracciones) {
 		Integer resultado = 0;
-		for (String nombreAtraccion:this.getNombres_atracciones()) {
+		for (Integer idAtraccion : this.getId_atracciones()) {
 			for (Atraccion atraccion : atracciones) {
-				if (nombreAtraccion.equals(atraccion.getNombre()) && !nombreAtraccion.equals(atraccionGratuita)) {
-					 resultado += atraccion.getValor();
+				if (idAtraccion.equals(atraccion.getId()) && !idAtraccion.equals(idAtraccionGratuita)) {
+					resultado += atraccion.getValor();
 				}
 			}
 		}
 		return resultado;
 	}
+
 	@Override
 	public String getTipoPromo() {
-		return "AxB";
+		return "AXB";
 	}
 }

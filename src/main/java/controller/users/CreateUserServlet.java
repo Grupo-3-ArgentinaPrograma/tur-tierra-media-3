@@ -41,7 +41,7 @@ public class CreateUserServlet extends HttpServlet {
 		User tmp_user = userService.create(username, password, coins, time);
 		
 		if (tmp_user.isValid()) {
-			resp.sendRedirect("/turismo/users/index.do");
+			resp.sendRedirect("turismo/users/index.do");
 		} else {
 			req.setAttribute("tmp_user", tmp_user);
 

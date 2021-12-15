@@ -14,7 +14,7 @@ public class UserService {
 	}
 
 	public User create(String username, String password, Integer coins, Double time) {
-		User user = new User(-1, username, password, coins, time, false);
+		User user = new User(-1, username, password, null, coins, time, false);
 		user.setPassword(password);
 
 		if (user.isValid()) {

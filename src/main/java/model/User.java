@@ -1,7 +1,6 @@
 package model;
 
 import java.util.*;
-
 import model.productos.*;
 import utils.Crypt;
 
@@ -10,13 +9,15 @@ public class User {
 	private String nombre;
 	private String password;
 	private Boolean admin;
-	private TipoAtraccion atraccionPreferida;// preferenci@Override
+	private TipoAtraccion atraccionPreferida;// preferencia
 	private Integer monedas;// presupuesto
 	private Double tiempo;
-	private List<Producto> compras;
 	private Integer gasto;
 	private Double hsAConsumir;
 	private HashMap<String, String> errors;
+	private List<Integer>id_atraccionesCompradas;
+	private List<Integer>id_promosCompradas;
+	private List<Producto>compras;
 
 	public User(Integer id, String nombre, String password, TipoAtraccion atraccionPreferida, Integer monedas,
 			Double tiempoDisponible, Boolean admin) {
@@ -29,7 +30,7 @@ public class User {
 		this.compras = new LinkedList<Producto>();
 		this.gasto = 0;
 		this.hsAConsumir = 0d;
-		this.admin = admin;
+		this.setAdmin(admin);
 	}
 
 	public String getNombre() {
@@ -59,11 +60,23 @@ public class User {
 	public Integer getId() {
 		return id;
 	}
-
-	public List<Producto> getCompras() {
-		return compras;
-	}
 	
+	public List<Integer> getId_atraccionesCompradas() {
+		return id_atraccionesCompradas;
+	}
+
+	public void setId_atraccionesCompradas(List<Integer> id_atraccionesCompradas) {
+		this.id_atraccionesCompradas = id_atraccionesCompradas;
+	}
+
+	public List<Integer> getId_promosCompradas() {
+		return id_promosCompradas;
+	}
+
+	public void setId_promosCompradas(List<Integer> id_promosCompradas) {
+		this.id_promosCompradas = id_promosCompradas;
+	}
+
 	public String getPassword() {
 		return password;
 	}
@@ -73,48 +86,39 @@ public class User {
 		return Crypt.match(password, this.password);
 	}
 	
-	public void setComprasRealizadas(String comprasStr, List<Atraccion> atracciones, List<Promo> promociones) {
-		for (String compra : comprasStr.split("/")) {
-			for (Atraccion atraccion : atracciones) {
-				if (compra.equals(atraccion.getNombre())) {
-					this.comprar(atraccion);
-				} else {
-					for (String elemento : compra.split(":")) {
-						for (Promo promo : promociones) {
-							if (elemento.equals(promo.getNombre())) {
-								this.comprar(atracciones, promo);
-							}
-						}
-					}
+	public void setComprasRealizadas(List<Promo> lista_promos, List<Atraccion> lista_atracciones) {
+		for(Promo P:lista_promos) {
+			for(Integer idPromo:getId_promosCompradas()) {
+				if(idPromo.equals(P.getId())) {
+					compras.add(P);
+				}
+			}
+		}
+		for(Atraccion A:lista_atracciones) {
+			for(Integer idAtraccion:getId_atraccionesCompradas()) {
+				if(idAtraccion.equals(A.getId())) {
+					compras.add(A);
 				}
 			}
 		}
 	}
-
-	public String getStringCompras() {
-		String comprasStr = new String();
-		for (Producto compra : compras) {
-			if (compra instanceof Promo) {
-				comprasStr += (compra.getNombre() + ":" + ((Promo) compra).nombresAtracciones() + "/");
-			}
-			if (compra instanceof Atraccion) {
-				comprasStr += (compra.getNombre() + "/");
-			}
-		}
-		return comprasStr;
+	
+	public List<Producto> getCompras(){
+		return this.compras;
 	}
 
+
 	public Boolean puedeComprar(Producto producto) {
-		return ((this.getMonedas() >= producto.getValor()) && (this.getTiempoDisponible() >= producto.getTiempo()))
+		return (this.tieneTiempoPara(producto) && this.tieneMonedasPara(producto))
 				&& (!producto.contieneAtraccion(compras));
 	}
 
-	public Boolean tieneTiempo() {
-		return tiempo > 0;
+	public Boolean tieneTiempoPara(Producto p) {
+		return getTiempoDisponible() >= p.getTiempo() ;
 	}
 
-	public Boolean tieneMonedas() {
-		return monedas > 0;
+	public Boolean tieneMonedasPara(Producto p) {
+		return getMonedas() >= p.getValor();
 	}
 
 	// compra las atracciones de una promo
@@ -123,7 +127,7 @@ public class User {
 		this.tiempo -= promo.getTiempo();
 		this.gasto += promo.precio(atracciones);
 		this.hsAConsumir += promo.getTiempo();
-		promo.setCupos(atracciones, promo.getNombres_atracciones());
+		promo.setCupos(atracciones);
 		compras.add(promo);
 	}
 
@@ -186,7 +190,14 @@ public class User {
 	}
 	
 	public boolean isNull() {
-		// TODO Auto-generated method stub
 		return false;
+	}
+
+	public Boolean getAdmin() {
+		return admin;
+	}
+
+	public void setAdmin(Boolean admin) {
+		this.admin = admin;
 	}
 }

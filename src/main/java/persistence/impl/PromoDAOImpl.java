@@ -15,7 +15,7 @@ public class PromoDAOImpl implements PromoDAO {
 	public List<Promo> findAll() {
 		try {
 			Connection conn = ConnectionProvider.getConnection();
-			String sql = "SELECT * FROM PROMOCION";
+			String sql = "SELECT * FROM PROMOS";
 			PreparedStatement statement = conn.prepareStatement(sql);
 			ResultSet resultados = statement.executeQuery();
 
@@ -33,18 +33,20 @@ public class PromoDAOImpl implements PromoDAO {
 	private Promo toPromo(ResultSet resultados) {
 		Promo promocion = null;
 		try {
-			switch (resultados.getString(2)) {
-			case "Absoluta":
-				promocion = new PromoAbsoluta(TipoAtraccion.valueOf(resultados.getString(3)), resultados.getString(1),
-						resultados.getString(4), resultados.getInt(7));
+			Integer id = resultados.getInt(1);
+			String nombre = resultados.getString(2);
+			String descripcion = resultados.getString(3);
+			TipoAtraccion tipo = TipoAtraccion.valueOf(resultados.getString(5));
+			List<Integer> id_atracciones = this.getIdAtracciones(id);
+			switch (resultados.getString(4)) {
+			case "ABSOLUTA":
+				promocion = new PromoAbsoluta(id, tipo, nombre, descripcion, id_atracciones, resultados.getInt(7));
 				break;
-			case "AxB":
-				promocion = new PromoAxB(TipoAtraccion.valueOf(resultados.getString(3)), resultados.getString(1),
-						resultados.getString(4), resultados.getString(6));
+			case "AXB":
+				promocion = new PromoAxB(id, tipo, nombre, descripcion, id_atracciones, resultados.getInt(8));
 				break;
-			case "Porcentual":
-				promocion = new PromoPorcentual(TipoAtraccion.valueOf(resultados.getString(3)), resultados.getString(1),
-						resultados.getString(4), resultados.getInt(5));
+			case "PORCENTUAL":
+				promocion = new PromoPorcentual(id, tipo, nombre, descripcion, id_atracciones, resultados.getInt(6));
 				break;
 			}
 		} catch (Exception e) {
@@ -57,30 +59,30 @@ public class PromoDAOImpl implements PromoDAO {
 	public int insert(Promo t) {
 
 		try {
-			String sql = "INSERT INTO PROMOCION (NOMBRE_PACK, TIPO_PROMO, TIPO_ATRACCION, ATRACCIONES, PORC_DESC, AXB_GRATIS, ABS_COSTO) VALUES (?, ?, ?, ?, ?, ?, ?)";
+			String sql = "INSERT INTO PROMOS (NOMBRE, DESCRIPCION, TIPO_PROMO, TIPO_ATRACCION, DESC_PORC, VALOR_ABSOL, FK_AT_GRATIS_AXB, BORRADO) VALUES (?, ?, ?, ?, ?, ?, ?, 0)";
 			Connection conn = ConnectionProvider.getConnection();
 			PreparedStatement statement = conn.prepareStatement(sql);
 
 			statement.setString(1, t.getNombre());
-			statement.setString(2, t.getTipoPromo());
-			statement.setString(3, t.getTipo().name());
-			statement.setString(4, t.nombresAtracciones());
+			statement.setString(2, t.getDescripcion());
+			statement.setString(3, t.getTipoPromo());
+			statement.setString(4, t.getTipo().name());
 
 			switch (t.getTipoPromo()) {
 			case "Absoluta":
 				statement.setNull(5, java.sql.Types.INTEGER);
-				statement.setString(6, null);
-				statement.setInt(7, t.getValor());
+				statement.setInt(6, t.getValor());
+				statement.setNull(7, java.sql.Types.INTEGER);
 				break;
 			case "AxB":
 				statement.setNull(5, java.sql.Types.INTEGER);
-				statement.setString(6, ((PromoAxB) t).getAtraccionGratuita());
-				statement.setInt(7, java.sql.Types.INTEGER);
+				statement.setNull(6, java.sql.Types.INTEGER);
+				statement.setInt(7, ((PromoAxB) t).getAtraccionGratuita());
 				break;
 			case "Porcentual":
-				statement.setNull(5, t.getValor());
-				statement.setString(6, null);
-				statement.setInt(7, java.sql.Types.INTEGER);
+				statement.setInt(5, t.getValor());
+				statement.setNull(6, java.sql.Types.INTEGER);
+				statement.setNull(7, java.sql.Types.INTEGER);
 				break;
 			}
 			int rows = statement.executeUpdate();
@@ -95,33 +97,34 @@ public class PromoDAOImpl implements PromoDAO {
 	public int update(Promo t) {
 
 		try {
-			String sql = "UPDATE PROMOCION SET TIPO_PROMO = ?, TIPO_ATRACCION = ?, ATRACCIONES = ?, PORC_DESC = ?, AXB_GRATIS = ?, ABS_COSTO = ? WHERE NOMBRE_PACK = ?";
+			String sql = "UPDATE PROMOS SET NOMBRE = ?, DESCRIPCION = ?, TIPO_PROMO = ?, TIPO_ATRACCION = ?, DESC_PORC = ?, VALOR_ABSOL = ? FK_AT_GRATIS_AXB = ? BORRADO = 0 WHERE ID = ?";
 			Connection conn = ConnectionProvider.getConnection();
 			PreparedStatement statement = conn.prepareStatement(sql);
-			
-			statement.setString(7, t.getNombre());
-			statement.setString(1, t.getTipoPromo());
-			statement.setString(2, t.getTipo().name());
-			statement.setString(3, t.nombresAtracciones());
-			
+
+			statement.setString(1, t.getNombre());
+			statement.setString(2, t.getDescripcion());
+			statement.setString(3, t.getTipoPromo());
+			statement.setString(4, t.getTipo().name());
+			statement.setInt(8, t.getId());
+
 			switch (t.getTipoPromo()) {
-			case "Absoluta":
-				statement.setNull(4, java.sql.Types.INTEGER);
-				statement.setString(5, null);
+			case "ABSOLUTA":
+				statement.setNull(5, java.sql.Types.INTEGER);
 				statement.setInt(6, t.getValor());
+				statement.setNull(7, java.sql.Types.INTEGER);
 				break;
-			case "AxB":
-				statement.setNull(4, java.sql.Types.INTEGER);
-				statement.setString(5, ((PromoAxB) t).getAtraccionGratuita());
+			case "AXB":
+				statement.setNull(5, java.sql.Types.INTEGER);
 				statement.setNull(6, java.sql.Types.INTEGER);
+				statement.setInt(7, ((PromoAxB) t).getAtraccionGratuita());
 				break;
-			case "Porcentual":
-				statement.setInt(4, t.getValor());
-				statement.setString(5, null);
+			case "PORCENTUAL":
+				statement.setInt(5, t.getValor());
 				statement.setNull(6, java.sql.Types.INTEGER);
+				statement.setNull(7, java.sql.Types.INTEGER);
 				break;
 			}
-			
+
 			int rows = statement.executeUpdate();
 			return rows;
 
@@ -133,10 +136,10 @@ public class PromoDAOImpl implements PromoDAO {
 	@Override
 	public int delete(Promo t) {
 		try {
-			String sql = "DELETE FROM PROMOCION WHERE NOMBRE_PACK = ?";
+			String sql = "UPDATE FROM PROMOS SET BORRADO = 1 WHERE ID = ?";
 			Connection conn = ConnectionProvider.getConnection();
 			PreparedStatement statement = conn.prepareStatement(sql);
-			statement.setString(1, t.getNombre());
+			statement.setInt(1, t.getId());
 			int rows = statement.executeUpdate();
 
 			return rows;
@@ -149,7 +152,7 @@ public class PromoDAOImpl implements PromoDAO {
 	public Promo findByNombre(String nombre) {
 		Promo promocion = null;
 		try {
-			String sql = "SELECT * FROM PROMOCION WHERE NOMBRE_PACK = ?";
+			String sql = "SELECT * FROM PROMOS WHERE NOMBRE = ?";
 			Connection conn = ConnectionProvider.getConnection();
 			PreparedStatement statement = conn.prepareStatement(sql);
 			statement.setString(1, nombre);
@@ -164,16 +167,60 @@ public class PromoDAOImpl implements PromoDAO {
 		return promocion;
 	}
 
+	public List<Integer> getIdAtracciones(Integer idPromo) {
+		List<Integer> id_atracciones = null;
+		try {
+			String sql = "SELECT FK_ATRACCION FROM ATTRACTIONS_IN_PROMOS WHERE FK_PROMO = ?";
+			Connection conn = ConnectionProvider.getConnection();
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setInt(1, idPromo);
+			ResultSet resultados = statement.executeQuery();
+
+			id_atracciones = new LinkedList<Integer>();
+			while (resultados.next()) {
+				Integer id_atraccion = resultados.getInt(1);
+				id_atracciones.add(id_atraccion);
+			}
+		} catch (Exception e) {
+			throw new MissingDataException(e);
+		}
+		return id_atracciones;
+	}
+
 	@Override
 	public Promo find(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		Promo promocion = null;
+		try {
+			String sql = "SELECT * FROM PROMOS WHERE ID = ?";
+			Connection conn = ConnectionProvider.getConnection();
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setInt(1, id);
+			ResultSet resultados = statement.executeQuery();
+
+			if (resultados.next()) {
+				promocion = toPromo(resultados);
+			}
+		} catch (Exception e) {
+			throw new MissingDataException(e);
+		}
+		return promocion;
 	}
 
 	@Override
 	public int countAll() {
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			String sql = "SELECT COUNT(1) AS TOTAL FROM PROMOS";
+			Connection conn = ConnectionProvider.getConnection();
+			PreparedStatement statement = conn.prepareStatement(sql);
+			ResultSet resultados = statement.executeQuery();
+
+			resultados.next();
+			int total = resultados.getInt("TOTAL");
+
+			return total;
+		} catch (Exception e) {
+			throw new MissingDataException(e);
+		}
 	}
 
 }

@@ -2,21 +2,27 @@ package model.productos;
 
 import java.util.List;
 
-public class PromoPorcentual extends Promo{
+public class PromoPorcentual extends Promo {
 
-	public PromoPorcentual(TipoAtraccion tipoPack, String nombrePromo, String nombres_atracciones, Integer valorDescuento) {
-		super(tipoPack, nombrePromo, nombres_atracciones, valorDescuento);
+	public PromoPorcentual(TipoAtraccion tipoPack, String nombrePromo, String descripcion, List<Integer> id_atracciones,
+			Integer valorDescuento) {
+		super(tipoPack, nombrePromo, descripcion, id_atracciones, valorDescuento);
 	}
 
-	//comprando 2 o mas sacar un porcentaje
+	public PromoPorcentual(Integer id, TipoAtraccion tipoPack, String nombrePromo, String descripcion,
+			List<Integer> id_atracciones, Integer valorDescuento) {
+		super(id, nombrePromo, descripcion, id_atracciones, valorDescuento, tipoPack);
+	}
+
+	// comprando 2 o mas sacar un porcentaje
 	@Override
 	public Integer precio(List<Atraccion> atracciones) {
 		Integer resultado = 0;
-		for(String nombre_atraccion : this.getNombres_atracciones()) {
-			 //buscar atraccion en atracciones, si esta lo sumo
+		for (Integer id_atraccion : this.getId_atracciones()) {
+			// buscar atraccion en atracciones, si esta lo sumo
 			for (Atraccion atraccion : atracciones) {
-				if (atraccion.getNombre().equals(nombre_atraccion)) {
-					 resultado += atraccion.getValor();
+				if (atraccion.getId().equals(id_atraccion)) {
+					resultado += atraccion.getValor();
 				}
 			}
 		}
@@ -25,6 +31,6 @@ public class PromoPorcentual extends Promo{
 
 	@Override
 	public String getTipoPromo() {
-		return "Porcentual";
+		return "PORCENTUAL";
 	}
 }
