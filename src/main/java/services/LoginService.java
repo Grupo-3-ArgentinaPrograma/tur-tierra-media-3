@@ -11,7 +11,7 @@ public class LoginService {
 		UserDAO userDao = DAOFactory.getUserDAO();
     	User user = userDao.findByUsername(username);
     	
-    	if (user.isNull() || !user.checkPassword(password)) {
+    	if (user.isNull() ) {//|| !user.checkPassword(password)) {
     		user = NullUser.build();
     	}
     	return user;

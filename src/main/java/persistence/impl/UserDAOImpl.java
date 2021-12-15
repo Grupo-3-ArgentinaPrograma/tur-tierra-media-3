@@ -21,7 +21,7 @@ public class UserDAOImpl implements UserDAO {
 
 	public int insert(User user) {
 		try {
-			String sql = "INSERT INTO USERS (NOMBRE, PASSWORD, MONEDAS, TIEMPO, TIPO_PREFERENCIA, BORRADO, ADMIN) VALUES (?, ?, ?, ?)";
+			String sql = "INSERT INTO USERS (NOMBRE, PASSWORD, MONEDAS, TIEMPO, TIPO_PREFERENCIA, ADMIN, BORRADO) VALUES (?, ?, ?, ?, ?, ?)";
 			Connection conn = ConnectionProvider.getConnection();
 
 			PreparedStatement statement = conn.prepareStatement(sql);
@@ -29,6 +29,8 @@ public class UserDAOImpl implements UserDAO {
 			statement.setString(2, user.getPassword());
 			statement.setInt(3, user.getMonedas());
 			statement.setDouble(4, user.getTiempoDisponible());
+			statement.setString(5, user.getAtraccionPreferida().name());
+			statement.setInt(6, user.getAdmin());
 			int rows = statement.executeUpdate();
 
 			return rows;

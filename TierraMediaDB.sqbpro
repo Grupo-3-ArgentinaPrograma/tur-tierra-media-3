@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/zepe/Documents/TierraMediaDB.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure pragmas query browser" current="0"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="5189"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,21:mainATTRACTIONS_IN_PROMOS"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="ATTRACTIONS" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="40"/><column index="2" value="190"/><column index="3" value="49"/><column index="4" value="74"/><column index="5" value="85"/><column index="6" value="119"/><column index="7" value="659"/><column index="8" value="76"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="ATTRACTIONS_IN_PROMOS" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="104"/><column index="2" value="76"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="COMPRAS_ITINERARIOS" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="3" mode="0"/></sort><column_widths><column index="1" value="104"/><column index="2" value="76"/><column index="3" value="104"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="ITINERARIOS" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="62"/><column index="2" value="97"/><column index="3" value="103"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="PROMOS" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="40"/><column index="2" value="198"/><column index="3" value="550"/><column index="4" value="91"/><column index="5" value="119"/><column index="6" value="82"/><column index="7" value="102"/><column index="8" value="137"/><column index="9" value="71"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="USERS" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="40"/><column index="2" value="60"/><column index="3" value="82"/><column index="4" value="70"/><column index="5" value="55"/><column index="6" value="129"/><column index="7" value="71"/><column index="8" value="51"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="sqlite_sequence" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="58"/><column index="2" value="40"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">DROP TABLE IF EXISTS &quot;COMPRAS_ITINERARIOS&quot;;
+DROP TABLE IF EXISTS &quot;ITINERARIOS&quot;;
+DROP TABLE IF EXISTS &quot;USERS&quot;;
+CREATE TABLE &quot;USERS&quot; (
+	&quot;ID&quot;	INTEGER NOT NULL CHECK(&quot;ID&quot; &gt; 0) UNIQUE,
+	&quot;NOMBRE&quot;	TEXT NOT NULL,
+	&quot;PASSWORD&quot;	TEXT NOT NULL,
+	&quot;MONEDAS&quot;	INTEGER NOT NULL CHECK(&quot;MONEDAS&quot; &gt;= 0),
+	&quot;TIEMPO&quot;	REAL NOT NULL CHECK(&quot;TIEMPO&quot; &gt;= 0),
+	&quot;TIPO_PREFERENCIA&quot;	TEXT NOT NULL CHECK(&quot;TIPO_PREFERENCIA&quot; = 'AVENTURA' OR &quot;TIPO_PREFERENCIA&quot; = 'DEGUSTACION' OR &quot;TIPO_PREFERENCIA&quot; = 'PAISAJE'),
+	&quot;BORRADO&quot;	INTEGER NOT NULL CHECK(&quot;BORRADO&quot; = 1 OR &quot;BORRADO&quot; = 0),
+	&quot;ADMIN&quot;	INTEGER NOT NULL CHECK(&quot;ADMIN&quot; = 1 OR &quot;ADMIN&quot; = 0),
+	PRIMARY KEY(&quot;ID&quot; AUTOINCREMENT)
+);
+
+DROP TABLE IF EXISTS &quot;ATTRACTIONS&quot;; 
+CREATE TABLE &quot;ATTRACTIONS&quot; (
+	&quot;ID&quot;	INTEGER NOT NULL CHECK(&quot;ID&quot; &gt; 0) UNIQUE,
+	&quot;NOMBRE&quot;	TEXT NOT NULL UNIQUE,
+	&quot;COSTO&quot;	INTEGER NOT NULL CHECK(&quot;COSTO&quot; &gt; 0),
+	&quot;DURACION&quot;	REAL NOT NULL CHECK(&quot;DURACION&quot; &gt; 0 AND &quot;DURACION&quot; &lt; 24),
+	&quot;CAPACIDAD&quot;	INTEGER NOT NULL CHECK(&quot;CAPACIDAD&quot; &gt;= 0),
+	&quot;TIPO_ATRACCION&quot;	TEXT NOT NULL CHECK(&quot;TIPO_ATRACCION&quot; = 'AVENTURA' OR &quot;TIPO_ATRACCION&quot; = 'DEGUSTACION' OR &quot;TIPO_ATRACCION&quot; = 'PAISAJE'),
+	&quot;DESCRIPCION&quot;	TEXT NOT NULL,
+	&quot;BORRADO&quot;	INTEGER NOT NULL CHECK(&quot;BORRADO&quot; = 1 OR &quot;BORRADO&quot; = 0),
+	PRIMARY KEY(&quot;ID&quot; AUTOINCREMENT)
+);
+
+DROP TABLE IF EXISTS &quot;PROMOS&quot;;
+CREATE TABLE &quot;PROMOS&quot; (
+	&quot;ID&quot;	INTEGER NOT NULL CHECK(&quot;ID&quot; &gt; 0) UNIQUE,
+	&quot;NOMBRE&quot;	TEXT NOT NULL UNIQUE,
+	&quot;DESCRIPCION&quot;	TEXT NOT NULL,
+	&quot;TIPO_PROMO&quot;	TEXT NOT NULL CHECK(&quot;TIPO_PROMO&quot; = 'ABSOLUTA' OR &quot;TIPO_PROMO&quot; = 'PORCENTUAL' OR &quot;TIPO_PROMO&quot; = 'AXB'),
+	&quot;TIPO_ATRACCION&quot;	TEXT NOT NULL CHECK(&quot;TIPO_ATRACCION&quot; = 'AVENTURA' OR &quot;TIPO_ATRACCION&quot; = 'DEGUSTACION' OR &quot;TIPO_ATRACCION&quot; = 'PAISAJE'),
+	&quot;DESC_PORC&quot;	INTEGER CHECK(&quot;DESC_PORC&quot; = null OR &quot;DESC_PORC&quot; &gt; 0),
+	&quot;VALOR_ABSOL&quot;	INTEGER CHECK(&quot;VALOR_ABSOL&quot; = null OR &quot;VALOR_ABSOL&quot; &gt; 0),
+	&quot;FK_AT_GRATIS_AXB&quot;	INTEGER CHECK(&quot;FK_AT_GRATIS_AXB&quot; = null OR &quot;FK_AT_GRATIS_AXB&quot; &gt; 0),
+	&quot;BORRADO&quot;	INTEGER NOT NULL CHECK(&quot;BORRADO&quot; = 1 OR &quot;BORRADO&quot; = 0),
+	FOREIGN KEY(&quot;FK_AT_GRATIS_AXB&quot;) REFERENCES &quot;ATTRACTIONS&quot;(&quot;ID&quot;),
+	PRIMARY KEY(&quot;ID&quot; AUTOINCREMENT)
+);
+
+DROP TABLE IF EXISTS &quot;ATTRACTIONS_IN_PROMOS&quot;;
+CREATE TABLE &quot;ATTRACTIONS_IN_PROMOS&quot; (
+	&quot;FK_ATRACCION&quot;	INTEGER NOT NULL CHECK(&quot;FK_ATRACCION&quot; &gt; 0),
+	&quot;FK_PROMO&quot;	INTEGER NOT NULL CHECK(&quot;FK_PROMO&quot; &gt; 0),
+	FOREIGN KEY(&quot;FK_ATRACCION&quot;) REFERENCES &quot;ATTRACTIONS&quot;(&quot;ID&quot;),
+	FOREIGN KEY(&quot;FK_PROMO&quot;) REFERENCES &quot;PROMOS&quot;(&quot;ID&quot;)
+);
+
+DROP TABLE IF EXISTS &quot;ITINERARIOS&quot;;
+CREATE TABLE &quot;ITINERARIOS&quot; (
+	&quot;FK_USER&quot;	INTEGER NOT NULL CHECK(&quot;FK_USER&quot; &gt; 0) UNIQUE,
+	&quot;COSTO_TOTAL&quot;	INTEGER NOT NULL CHECK(&quot;COSTO_TOTAL&quot; &gt; 0),
+	&quot;TIEMPO_TOTAL&quot;	INTEGER NOT NULL CHECK(&quot;TIEMPO_TOTAL&quot; &gt; 0),
+	FOREIGN KEY(&quot;FK_USER&quot;) REFERENCES &quot;USERS&quot;(&quot;ID&quot;),
+	PRIMARY KEY(&quot;FK_USER&quot;)
+) WITHOUT ROWID;
+
+DROP TABLE IF EXISTS &quot;COMPRAS_ITINERARIOS&quot;;
+CREATE TABLE &quot;COMPRAS_ITINERARIOS&quot; (
+	&quot;FK_ITINERARIO&quot;	INTEGER NOT NULL CHECK(&quot;FK_ITINERARIO&quot; &gt; 0),
+	&quot;FK_PROMO&quot;	INTEGER CHECK(&quot;FK_PROMO&quot; &gt; 0),
+	&quot;FK_ATRACCION&quot;	INTEGER NOT NULL CHECK(&quot;FK_ATRACCION&quot; &gt; 0),
+	FOREIGN KEY(&quot;FK_ATRACCION&quot;) REFERENCES &quot;ATTRACTIONS&quot;(&quot;ID&quot;),
+	FOREIGN KEY(&quot;FK_ITINERARIO&quot;) REFERENCES &quot;ITINERARIOS&quot;(&quot;FK_USER&quot;),
+	FOREIGN KEY(&quot;FK_PROMO&quot;) REFERENCES &quot;PROMOS&quot;(&quot;ID&quot;)
+);
+
+INSERT INTO USERS (NOMBRE, PASSWORD, MONEDAS, TIEMPO, TIPO_PREFERENCIA, BORRADO, ADMIN) VALUES 
+('Eowyn','Eowyn',10,8,'AVENTURA',0,0),
+('Gandalf','Gandalf',100,5,'PAISAJE',0,0),
+('Sam','Sam',36,8,'DEGUSTACION',0,0),
+('Galadriel','Galadriel',120,6,'PAISAJE',0,0),
+('Aragorn','Aragorn',50,6.5,'AVENTURA',0,0),
+('Gimli','Gimli',75,9,'DEGUSTACION',0,0),
+('Elrond','Elrond',100,5,'PAISAJE',0,0),
+('Legolas','Legolas',40,7,'AVENTURA',0,0),
+('Sauron','Sauron',150,9,'AVENTURA',0,0),
+('Pipin','Pipin',40,12,'DEGUSTACION',0,0),
+('Nico','Nico',10000,24,'PAISAJE',0,1);
+
+INSERT INTO ATTRACTIONS (NOMBRE, COSTO, DURACION, CAPACIDAD, TIPO_ATRACCION, DESCRIPCION, BORRADO) VALUES 
+('Moria',10,2,6,'AVENTURA','Un recorrido emocionante por las minas de Moria',0),
+('Minas Tirith',5,2.5,25,'PAISAJE','Un momento de contemplacion reservado en lo mas alto de Minas Tirith',0),
+('La Comarca',3,6.5,150,'DEGUSTACION','Un recorrido para los paladares por las tabernas de La Comarca',0),
+('Abismo de Helm',5,2,15,'PAISAJE','Disfruta y contempla la tranquilidad del Abismo de Helm, el lugar mas seguro e infranqueable de la tierra media',0),
+('Mordor',25,3,4,'AVENTURA','Adentrate en la region de Mordor y atrevete a llegar al Monte del Destino',0),
+('Lothlorien',35,1,30,'DEGUSTACION','Degusta comidas elficas en el magico Reino de Lothlorien',0),
+('Erebor',12,3,32,'PAISAJE','Disfruta la tranquilidad en la cima de Erebor, la Montaña Solitaria',0),
+('Bosque Negro',3,4,12,'AVENTURA','Atrevete a entrar al Bosque Negro, se rumorea que hay un nigromante peligroso',0),
+('Montañas Nubladas',15,5,20,'AVENTURA','Recorre las Montañas Nubladas pero ten cuidado cuando pases por la Ciudad de los Trasgos',0),
+('Ciudad del lago',20,3,35,'DEGUSTACION','Prueba todos los sabores del mercado de la Ciudad del Lago, reconstruida tras el ataque de Smaug',0);
+
+INSERT INTO PROMOS (NOMBRE, DESCRIPCION, TIPO_PROMO, TIPO_ATRACCION, DESC_PORC, VALOR_ABSOL,FK_AT_GRATIS_AXB,BORRADO) VALUES
+('Pack aventura a peligrosa','Aventurate desde el Bosque Negro hasta Mordor','PORCENTUAL','AVENTURA',20,NULL,NULL,0),
+('Pack vistas del este','Contempla el este, las cimas de Minas Tirith y Erebor y lo mas profundo del Abismo de Helm','AXB','PAISAJE',NULL,NULL,7,0),
+('Pack paladares finos','Refina tus gustos con comidas elficas y cervezas de hobbits','ABSOLUTA','DEGUSTACION',NULL,30,NULL,0),
+('Pack aventura absoluta','Adentrate en la aventura mas completa al mejor precio, hay cupos muy limitados','ABSOLUTA','AVENTURA',NULL,17,NULL,0),
+('Pack barriga llena','Ve el recorrido completo de las mejores cervezas, desde la fabrica hasta tu mesa','AXB','DEGUSTACION',NULL,NULL,3,0),
+('Pack vistas impresionantes','Aprovecha este descuento para nuestros dos recorridos mas contemplativos','PORCENTUAL','PAISAJE',35,NULL,NULL,0);
+
+INSERT INTO ATTRACTIONS_IN_PROMOS (FK_ATRACCION, FK_PROMO) VALUES 
+(5,1),
+(8,1),
+(2,2),
+(4,2),
+(7,2),
+(6,3),
+(3,3),
+(1,4),
+(5,4),
+(9,4),
+(6,5),
+(10,5),
+(3,5),
+(7,6),
+(4,6);
+
+
+
+</sql><current_tab id="0"/></tab_sql></sqlb_project>

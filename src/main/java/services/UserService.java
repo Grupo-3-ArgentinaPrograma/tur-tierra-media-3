@@ -18,9 +18,6 @@ public class UserService {
 		user.setPassword(password);
 
 		if (user.isValid()) {
-			UserDAO usuarioDAO = DAOFactory.getUserDAO();
-			
-			if(usuarioDAO.)
 			DAOFactory.getUserDAO().insert(user);
 			// XXX: si no devuelve "1", es que hubo más errores
 		}
@@ -60,7 +57,7 @@ public class UserService {
 		return DAOFactory.getUserDAO().find(id);
 	}
 
-	public User findByNombreAtraccion(String nombre) {
+	public User findByNombre(String nombre) {
 		return DAOFactory.getUserDAO().findByUsername(nombre);
 	}
 }

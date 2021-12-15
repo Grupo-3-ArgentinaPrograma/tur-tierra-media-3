@@ -1,0 +1,120 @@
+DROP TABLE IF EXISTS "USERS";
+CREATE TABLE "USERS" (
+	"ID"	INTEGER NOT NULL CHECK("ID" > 0) UNIQUE,
+	"NOMBRE"	TEXT NOT NULL,
+	"PASSWORD"	TEXT NOT NULL,
+	"MONEDAS"	INTEGER NOT NULL CHECK("MONEDAS" >= 0),
+	"TIEMPO"	REAL NOT NULL CHECK("TIEMPO" >= 0),
+	"TIPO_PREFERENCIA"	TEXT NOT NULL CHECK("TIPO_PREFERENCIA" = 'AVENTURA' OR "TIPO_PREFERENCIA" = 'DEGUSTACION' OR "TIPO_PREFERENCIA" = 'PAISAJE'),
+	"BORRADO"	INTEGER NOT NULL CHECK("BORRADO" = 1 OR "BORRADO" = 0),
+	"ADMIN"	INTEGER NOT NULL CHECK("ADMIN" = 1 OR "ADMIN" = 0),
+	PRIMARY KEY("ID" AUTOINCREMENT)
+);
+
+
+DROP TABLE IF EXISTS "ATTRACTIONS"; 
+CREATE TABLE "ATTRACTIONS" (
+	"ID"	INTEGER NOT NULL CHECK("ID" > 0) UNIQUE,
+	"NOMBRE"	TEXT NOT NULL UNIQUE,
+	"COSTO"	INTEGER NOT NULL CHECK("COSTO" > 0),
+	"DURACION"	REAL NOT NULL CHECK("DURACION" > 0 AND "DURACION" < 24),
+	"CAPACIDAD"	INTEGER NOT NULL CHECK("CAPACIDAD" >= 0),
+	"TIPO_ATRACCION"	TEXT NOT NULL CHECK("TIPO_ATRACCION" = 'AVENTURA' OR "TIPO_ATRACCION" = 'DEGUSTACION' OR "TIPO_ATRACCION" = 'PAISAJE'),
+	"DESCRIPCION"	TEXT NOT NULL,
+	"BORRADO"	INTEGER NOT NULL CHECK("BORRADO" = 1 OR "BORRADO" = 0),
+	PRIMARY KEY("ID" AUTOINCREMENT)
+);
+
+DROP TABLE IF EXISTS "PROMOS";
+CREATE TABLE "PROMOS" (
+	"ID"	INTEGER NOT NULL CHECK("ID" > 0) UNIQUE,
+	"NOMBRE"	TEXT NOT NULL UNIQUE,
+	"DESCRIPCION"	TEXT NOT NULL,
+	"TIPO_PROMO"	TEXT NOT NULL CHECK("TIPO_PROMO" = 'ABSOLUTA' OR "TIPO_PROMO" = 'PORCENTUAL' OR "TIPO_PROMO" = 'AXB'),
+	"TIPO_ATRACCION"	TEXT NOT NULL CHECK("TIPO_ATRACCION" = 'AVENTURA' OR "TIPO_ATRACCION" = 'DEGUSTACION' OR "TIPO_ATRACCION" = 'PAISAJE'),
+	"DESC_PORC"	INTEGER CHECK("DESC_PORC" = null OR "DESC_PORC" > 0),
+	"VALOR_ABSOL"	INTEGER CHECK("VALOR_ABSOL" = null OR "VALOR_ABSOL" > 0),
+	"FK_AT_GRATIS_AXB"	INTEGER CHECK("FK_AT_GRATIS_AXB" = null OR "FK_AT_GRATIS_AXB" > 0),
+	"BORRADO"	INTEGER NOT NULL CHECK("BORRADO" = 1 OR "BORRADO" = 0),
+	FOREIGN KEY("FK_AT_GRATIS_AXB") REFERENCES "ATTRACTIONS"("ID"),
+	PRIMARY KEY("ID" AUTOINCREMENT)
+);
+
+
+DROP TABLE IF EXISTS "ITINERARIOS";
+CREATE TABLE "ITINERARIOS" (
+	"FK_USER"	INTEGER NOT NULL CHECK("FK_USER" > 0) UNIQUE,
+	"COSTO_TOTAL"	INTEGER NOT NULL CHECK("COSTO_TOTAL" > 0),
+	"TIEMPO_TOTAL"	INTEGER NOT NULL CHECK("TIEMPO_TOTAL" > 0),
+	FOREIGN KEY("FK_USER") REFERENCES "USERS"("ID"),
+	PRIMARY KEY("FK_USER")
+) WITHOUT ROWID;
+
+DROP TABLE IF EXISTS "ATTRACTIONS_IN_PROMOS";
+CREATE TABLE "ATTRACTIONS_IN_PROMOS" (
+	"FK_ATRACCION"	INTEGER NOT NULL CHECK("FK_ATRACCION" > 0),
+	"FK_PROMO"	INTEGER NOT NULL CHECK("FK_PROMO" > 0),
+	FOREIGN KEY("FK_ATRACCION") REFERENCES "ATTRACTIONS"("ID"),
+	FOREIGN KEY("FK_PROMO") REFERENCES "PROMOS"("ID")
+);
+
+
+DROP TABLE IF EXISTS "COMPRAS_ITINERARIOS";
+CREATE TABLE "COMPRAS_ITINERARIOS" (
+	"FK_ITINERARIO"	INTEGER NOT NULL CHECK("FK_ITINERARIO" > 0),
+	"FK_PROMO"	INTEGER CHECK("FK_PROMO" > 0),
+	"FK_ATRACCION"	INTEGER NOT NULL CHECK("FK_ATRACCION" > 0),
+	FOREIGN KEY("FK_ATRACCION") REFERENCES "ATTRACTIONS"("ID"),
+	FOREIGN KEY("FK_ITINERARIO") REFERENCES "ITINERARIOS"("FK_USER"),
+	FOREIGN KEY("FK_PROMO") REFERENCES "PROMOS"("ID")
+);
+
+INSERT INTO USERS (NOMBRE, PASSWORD, MONEDAS, TIEMPO, TIPO_PREFERENCIA, BORRADO, ADMIN) VALUES 
+('Eowyn','Eowyn',10,8,'AVENTURA',0,0),
+('Gandalf','Gandalf',100,5,'PAISAJE',0,0),
+('Sam','Sam',36,8,'DEGUSTACION',0,0),
+('Galadriel','Galadriel',120,6,'PAISAJE',0,0),
+('Aragorn','Aragorn',50,6.5,'AVENTURA',0,0),
+('Gimli','Gimli',75,9,'DEGUSTACION',0,0),
+('Elrond','Elrond',100,5,'PAISAJE',0,0),
+('Legolas','Legolas',40,7,'AVENTURA',0,0),
+('Sauron','Sauron',150,9,'AVENTURA',0,0),
+('Pipin','Pipin',40,12,'DEGUSTACION',0,0),
+('Nico','Nico',10000,24,'PAISAJE',0,1);
+
+INSERT INTO ATTRACTIONS (NOMBRE, COSTO, DURACION, CAPACIDAD, TIPO_ATRACCION, DESCRIPCION, BORRADO) VALUES 
+('Moria',10,2,6,'AVENTURA','Un recorrido emocionante por las minas de Moria',0),
+('Minas Tirith',5,2.5,25,'PAISAJE','Un momento de contemplacion reservado en lo mas alto de Minas Tirith',0),
+('La Comarca',3,6.5,150,'DEGUSTACION','Un recorrido para los paladares por las tabernas de La Comarca',0),
+('Abismo de Helm',5,2,15,'PAISAJE','Disfruta y contempla la tranquilidad del Abismo de Helm, el lugar mas seguro e infranqueable de la tierra media',0),
+('Mordor',25,3,4,'AVENTURA','Adentrate en la region de Mordor y atrevete a llegar al Monte del Destino',0),
+('Lothlorien',35,1,30,'DEGUSTACION','Degusta comidas elficas en el magico Reino de Lothlorien',0),
+('Erebor',12,3,32,'PAISAJE','Disfruta la tranquilidad en la cima de Erebor, la Montaña Solitaria',0),
+('Bosque Negro',3,4,12,'AVENTURA','Atrevete a entrar al Bosque Negro, se rumorea que hay un nigromante peligroso',0),
+('Montañas Nubladas',15,5,20,'AVENTURA','Recorre las Montañas Nubladas pero ten cuidado cuando pases por la Ciudad de los Trasgos',0),
+('Ciudad del lago',20,3,35,'DEGUSTACION','Prueba todos los sabores del mercado de la Ciudad del Lago, reconstruida tras el ataque de Smaug',0);
+
+INSERT INTO PROMOS (NOMBRE, DESCRIPCION, TIPO_PROMO, TIPO_ATRACCION, DESC_PORC, VALOR_ABSOL,FK_AT_GRATIS_AXB,BORRADO) VALUES
+('Pack aventura a peligrosa','Aventurate desde el Bosque Negro hasta Mordor','PORCENTUAL','AVENTURA',20,NULL,NULL,0),
+('Pack vistas del este','Contempla el este, las cimas de Minas Tirith y Erebor y lo mas profundo del Abismo de Helm','AXB','PAISAJE',NULL,NULL,7,0),
+('Pack paladares finos','Refina tus gustos con comidas elficas y cervezas de hobbits','ABSOLUTA','DEGUSTACION',NULL,30,NULL,0),
+('Pack aventura absoluta','Adentrate en la aventura mas completa al mejor precio, hay cupos muy limitados','ABSOLUTA','AVENTURA',NULL,17,NULL,0),
+('Pack barriga llena','Ve el recorrido completo de las mejores cervezas, desde la fabrica hasta tu mesa','AXB','DEGUSTACION',NULL,NULL,3,0),
+('Pack vistas impresionantes','Aprovecha este descuento para nuestros dos recorridos mas contemplativos','PORCENTUAL','PAISAJE',35,NULL,NULL,0);
+
+INSERT INTO ATTRACTIONS_IN_PROMOS (FK_ATRACCION, FK_PROMO) VALUES 
+(5,1),
+(8,1),
+(2,2),
+(4,2),
+(7,2),
+(6,3),
+(3,3),
+(1,4),
+(5,4),
+(9,4),
+(6,5),
+(10,5),
+(3,5),
+(7,6),
+(4,6);

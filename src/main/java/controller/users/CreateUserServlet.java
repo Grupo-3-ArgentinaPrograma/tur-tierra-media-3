@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.User;
+import model.productos.TipoAtraccion;
 import services.UserService;
 
 @WebServlet("/users/create.do")
@@ -37,8 +38,16 @@ public class CreateUserServlet extends HttpServlet {
 		String password = req.getParameter("password");
 		Integer coins = Integer.parseInt(req.getParameter("coins"));
 		Double time = Double.parseDouble(req.getParameter("time"));
+		TipoAtraccion type= TipoAtraccion.valueOf(req.getParameter("typeAttraction"));
+		Boolean isAdmin = Boolean.valueOf(req.getParameter("isAdmin"));
 
-		User tmp_user = userService.create(username, password, coins, time);
+		User tmp_user =  userService.findByNombre(username);
+		if(tmp_user!=null) {
+			Integer id = tmp_user.getId();
+			tmp_user=userService.update(id, username, password, coins, time, type, isAdmin);
+		}else {
+			tmp_user = userService.create(username, password, type, coins, time, isAdmin);
+		}
 		
 		if (tmp_user.isValid()) {
 			resp.sendRedirect("turismo/users/index.do");
