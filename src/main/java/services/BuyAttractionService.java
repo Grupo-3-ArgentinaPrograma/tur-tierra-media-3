@@ -34,7 +34,6 @@ public class BuyAttractionService {
 
 		if (errors.isEmpty()) {
 			user.comprar(attraction);
-
 			attractionDAO.update(attraction);
 			userDAO.update(user);
 			userDAO.saveCompras(user);

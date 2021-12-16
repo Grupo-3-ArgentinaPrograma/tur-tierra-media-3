@@ -166,7 +166,6 @@ public class User {
 		this.gasto += atraccion.getValor();
 		this.hsAConsumir += atraccion.getTiempo();
 		atraccion.reducirCupo(1);
-		;
 		compras.add(atraccion);
 	}
 

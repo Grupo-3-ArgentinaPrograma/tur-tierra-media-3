@@ -47,10 +47,8 @@ public class UserService {
 	}
 
 	public void delete(Integer id) {
-		User usuario = new User(id, null, null, null, null, null, null);
-
 		UserDAO usuarioDAO = DAOFactory.getUserDAO();
-		usuarioDAO.delete(usuario);
+		usuarioDAO.delete(usuarioDAO.find(id));
 	}
 
 	public User find(Integer id) {

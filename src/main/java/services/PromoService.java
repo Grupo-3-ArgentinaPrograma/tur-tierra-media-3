@@ -71,10 +71,8 @@ public class PromoService {
 	}
 
 	public void delete(Integer id) {
-
 		PromoDAO promotionDAO = DAOFactory.getPromoDAO();
-		Promo promotion = find(id);
-		promotionDAO.delete(promotion);
+		promotionDAO.delete(promotionDAO.find(id));
 	}
 
 	public Promo find(Integer id) {
