@@ -43,7 +43,7 @@ import services.UserService;
 		String password = req.getParameter("password");
 		Integer monedas = Integer.parseInt(req.getParameter("coins"));
 		Double tiempo = Double.parseDouble(req.getParameter("time"));
-		TipoAtraccion type = TipoAtraccion.valueOf(req.getParameter("type_fav"));
+		TipoAtraccion type = TipoAtraccion.valueOf(req.getParameter("type_fav").toUpperCase());
 		Boolean isAdmin = Boolean.valueOf(req.getParameter("isAdmin"));
 
 		User usuario = usuarioService.update(id, name, password, monedas, tiempo, type, isAdmin);

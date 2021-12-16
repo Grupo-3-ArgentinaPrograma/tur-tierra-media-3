@@ -50,6 +50,10 @@ public class User {
 		return atraccionPreferida;
 	}
 	
+	public String getAtraccionPreferidaStr() {
+		return atraccionPreferida.name().toLowerCase();
+	}
+	
 	public void setAtraccionPreferida(TipoAtraccion tipoAtraccion) {
 		this.atraccionPreferida=tipoAtraccion;
 	}
@@ -126,6 +130,10 @@ public class User {
 
 	public List<Producto> getCompras() {
 		return this.compras;
+	}
+	
+	public Boolean comprasIsEmpty() {
+		return this.compras.isEmpty();
 	}
 
 	public Boolean puedeComprar(Producto producto) {
@@ -223,6 +231,9 @@ public class User {
 	
 	public Integer getAdmin() {
 		return isAdmin()?1:0;
+	}
+	public String getAdminStr() {
+		return isAdmin()?"true":"false";
 	}
 
 	public void setAdmin(Boolean admin) {

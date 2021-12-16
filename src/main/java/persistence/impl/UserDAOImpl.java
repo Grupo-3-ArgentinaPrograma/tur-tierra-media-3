@@ -21,7 +21,7 @@ public class UserDAOImpl implements UserDAO {
 
 	public int insert(User user) {
 		try {
-			String sql = "INSERT INTO USERS (NOMBRE, PASSWORD, MONEDAS, TIEMPO, TIPO_PREFERENCIA, ADMIN, BORRADO) VALUES (?, ?, ?, ?, ?, ?)";
+			String sql = "INSERT INTO USERS (NOMBRE, PASSWORD, MONEDAS, TIEMPO, TIPO_PREFERENCIA, ADMIN, BORRADO) VALUES (?, ?, ?, ?, ?, ?, 0)";
 			Connection conn = ConnectionProvider.getConnection();
 
 			PreparedStatement statement = conn.prepareStatement(sql);
@@ -41,13 +41,17 @@ public class UserDAOImpl implements UserDAO {
 
 	public int update(User user) {
 		try {
-			String sql = "UPDATE USERS SET COINS = ?, TIME = ? WHERE ID = ?";
+			String sql = "UPDATE USERS SET NOMBRE = ?, PASSWORD = ?, MONEDAS = ?, TIEMPO = ?, TIPO_PREFERENCIA = ?, ADMIN = ?, BORRADO = 0 WHERE ID = ?";
 			Connection conn = ConnectionProvider.getConnection();
 
 			PreparedStatement statement = conn.prepareStatement(sql);
-			statement.setInt(1, user.getMonedas());
-			statement.setDouble(2, user.getTiempoDisponible());
-			statement.setDouble(3, user.getId());
+			statement.setString(1, user.getNombre());
+			statement.setString(2, user.getPassword());
+			statement.setInt(3, user.getMonedas());
+			statement.setDouble(4, user.getTiempoDisponible());
+			statement.setString(5, user.getAtraccionPreferida().name());
+			statement.setInt(6, user.getAdmin());
+			statement.setInt(7, user.getId());
 			int rows = statement.executeUpdate();
 
 			return rows;

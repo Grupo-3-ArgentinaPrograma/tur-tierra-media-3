@@ -2,7 +2,7 @@
 
 <div class="mb-3">
 	<label for="name" class="col-form-label">Username:</label> <input
-		type="text" class="form-control" id="name" name="username"
+		type="text" class="form-control" id="name" name="name"
 		required value="${tmp_user.getNombre()}">
 </div>
 <div class="mb-3">
@@ -24,7 +24,16 @@
 		<c:out value='${tmp_user.errors.get("time")}'></c:out>
 	</div>
 </div>
-
+<div class="mb-3">
+	<label for="type_fav" class="col-form-label">Tipo atraccion preferida(degustacion/aventura/paisaje):</label> <input
+		type="text" class="form-control" id="type_fav" name="type_fav"
+		required value="${tmp_user.getAtraccionPreferidaStr()}">
+</div>
+<div class="mb-3">
+	<label for="isAdmin" class="col-form-label">Es Admin(true/false):</label> <input
+		type="text" class="form-control" id="isAdmin" name="isAdmin"
+		required value="${tmp_user.getAdminStr()}">
+</div>
 <div class="mb-3">
 	<label for="password"
 		class='col-form-label ${tmp_user.errors.get("password") != null ? "is-invalid" : "" }'>Contraseña:</label>

@@ -44,8 +44,8 @@ import services.PromoService;
 		Integer id = Integer.parseInt(req.getParameter("id"));
 		String name = req.getParameter("name");
 		String description = req.getParameter("description");
-		String typePromotion = req.getParameter("promo_type");
-		TipoAtraccion typeAttraction = TipoAtraccion.valueOf(req.getParameter("attraction_type"));
+		String typePromotion = req.getParameter("promo_type").toUpperCase();
+		TipoAtraccion typeAttraction = TipoAtraccion.valueOf(req.getParameter("attraction_type").toUpperCase());
 		Integer discount = Integer.parseInt(req.getParameter("discount"));
 		List<Integer> idAttractions = new LinkedList<Integer>();
 		

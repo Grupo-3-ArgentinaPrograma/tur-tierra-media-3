@@ -28,6 +28,9 @@ public class BuyPromoService {
 		if (!user.tieneTiempoPara(promo)) {
 			errors.put("user", "No tienes tiempo suficiente");
 		}
+		if (!user.puedeComprar(promo)) {
+			errors.put("user", "No puedes comprar esta promo");
+		}
 
 		if (errors.isEmpty()) {
 			user.comprar(atracciones,promo);

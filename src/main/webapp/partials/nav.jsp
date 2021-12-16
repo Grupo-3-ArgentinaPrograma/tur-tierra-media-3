@@ -15,6 +15,8 @@
 					aria-current="page" href="/turismo/attractions/index.do">Atracciones</a></li>
 					<li class="nav-item"><a class="nav-link active"
 					aria-current="page" href="/turismo/promos/index.do">Promociones</a></li>
+					<li class="nav-item"><a class="nav-link active"
+					aria-current="page" href="/turismo/itinerarios/index.do">Itinerarios</a></li>
 				<c:if test="${user.isAdmin()}">
 					<li class="nav-item"><a class="nav-link active"
 						aria-current="page" href="/turismo/users/index.do">Usuarios</a></li>

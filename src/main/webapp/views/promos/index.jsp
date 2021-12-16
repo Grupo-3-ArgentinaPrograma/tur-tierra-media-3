@@ -34,7 +34,7 @@
 		<c:if test="${user.isAdmin()}">
 			<div class="mb-3">
 				<a href="/turismo/promos/create.do" class="btn btn-primary"
-					role="button"> <i class="bi bi-plus-lg"></i> Nueva Atracción
+					role="button"> <i class="bi bi-plus-lg"></i> Nueva Promocion
 				</a>
 			</div>
 		</c:if>
@@ -56,7 +56,7 @@
 						<td><c:out value="${promotion.getDescripcion()}. Una promcion de ${promotion.getTipoAtraccionStr()}."></c:out></td>
 						<td><c:out value="${promotion.getValor()}"></c:out></td>
 						<td><c:out value="${promotion.getTiempo()}"></c:out></td>
-						<td><c:out value="${promotion.getCupo()}"></c:out></td>
+						<td><c:out value="${promotion.getCupo(attractions)}"></c:out></td>
 
 						<td><c:if test="${user.isAdmin()}">
 								<a href="/turismo/promos/edit.do?id=${promotion.getId()}"
