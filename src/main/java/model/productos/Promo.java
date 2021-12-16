@@ -82,7 +82,7 @@ public abstract class Promo extends Producto {
 		errors = new HashMap<String, String>();
 
 		if (valor <= 0) {
-			errors.put("cost", "Debe ser positivo");
+			errors.put("cost", "Debe ser un valor positivo");
 		}
 		if (tiempo <= 0) {
 			errors.put("duration", "Debe ser positivo");

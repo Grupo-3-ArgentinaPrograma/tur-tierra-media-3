@@ -17,7 +17,7 @@ public class PromoDAOImpl implements PromoDAO {
 	public List<Promo> findAll() {
 		try {
 			Connection conn = ConnectionProvider.getConnection();
-			String sql = "SELECT * FROM PROMOS";
+			String sql = "SELECT * FROM PROMOS WHERE BORRADO = 0";
 			PreparedStatement statement = conn.prepareStatement(sql);
 			ResultSet resultados = statement.executeQuery();
 

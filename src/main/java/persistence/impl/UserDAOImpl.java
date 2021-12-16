@@ -130,7 +130,7 @@ public class UserDAOImpl implements UserDAO {
 
 	public List<User> findAll() {
 		try {
-			String sql = "SELECT * FROM USERS";
+			String sql = "SELECT * FROM USERS WHERE BORRADO = 0";
 			Connection conn = ConnectionProvider.getConnection();
 			PreparedStatement statement = conn.prepareStatement(sql);
 			ResultSet resultados = statement.executeQuery();

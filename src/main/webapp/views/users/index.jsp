@@ -51,12 +51,12 @@
 			<tbody>
 				<c:forEach items="${users}" var="tmp_user">
 					<tr>
-						<td><strong><c:out value="${tmp_user.username}"></c:out></strong></td>
-						<td><c:out value="${tmp_user.coins}"></c:out></td>
-						<td><c:out value="${tmp_user.time}"></c:out></td>
+						<td><strong><c:out value="${tmp_user.getNombre()}"></c:out></strong></td>
+						<td><c:out value="${tmp_user.getMonedas()}"></c:out></td>
+						<td><c:out value="${tmp_user.getTiempoDisponible()}"></c:out></td>
 						<td>
 							<c:choose>
-								<c:when test="${tmp_user.admin}">
+								<c:when test="${tmp_user.isAdmin()}">
 									Admin
 								</c:when>
 								<c:otherwise>
@@ -64,13 +64,13 @@
 								</c:otherwise>
 							</c:choose>						
 						</td>
-						<td><c:if test="${user.admin && (!tmp_user.admin || tmp_user.id == user.id)}">
-								<a href="/turismo/users/edit.do?id=${tmp_user.id}"
-									class="btn btn-light rounded-0" role="button"><i
-									class="bi bi-pencil-fill"></i></a>
-								<a href="/turismo/users/delete.do?id=${tmp_user.id}"
+						<td><c:if test="${user.isAdmin() && (!tmp_user.isAdmin() || tmp_user.getId() == user.getId())}">
+								<a href="/turismo/users/edit.do?id=${tmp_user.getId()}"
+									class="btn btn-primary rounded-0" role="button"><i
+									class="bi bi-pencil-fill"></i>Editar</a>
+								<a href="/turismo/users/delete.do?id=${tmp_user.getId()}"
 									class="btn btn-danger rounded" role="button"><i
-									class="bi bi-x-circle-fill"></i></a>
+									class="bi bi-x-circle-fill"></i>Borrar</a>
 							</c:if></td>
 					</tr>
 				</c:forEach>

@@ -22,6 +22,10 @@ public abstract class Producto{
 		return tipo;
 	}
 	
+	public String getTipoAtraccionStr() {
+		return tipo.name().toLowerCase();
+	}
+	
 	public void setTipo(TipoAtraccion tipo) {
 		this.tipo=tipo;
 	}
